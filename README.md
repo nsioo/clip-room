@@ -14,19 +14,42 @@
 
 ## 功能一览
 
-- [x] 视频剪辑
-  
-  设置起始位 / 结束位、分割视频、拼接视频
-  
-- [x] 调节参数
-  
-  播放速率、视频音量、Change fps with support for motion interpolation、更改分辨率和比特率
-  
-- [x] 高级导出设置 [ffmpeg filters](https://ffmpeg.org/ffmpeg-filters.html):
-  
-  改变对比度、亮度、饱和度、低音增强、在音频中添加回声、创建视频或音频的直方图、移除水印、改变色相、其他过滤器...
-  
-- [ ] 预览链接
+<details> 
+    <summary>🍻 视频剪辑</summary>
+    <pre>	✔️ 设置起始位 / 结束位
+    ✔️ 分割视频
+    ✔️ 拼接视频
+    </pre>
+</details>
+
+<details> 
+    <summary>😎 调节参数</summary>
+    <pre>	✔️ 播放速率条件
+    ✔️ 视频音量调节
+    ✔️ Change fps with support for motion interpolation
+    ✔️ 更改分辨率 / 比特率
+    </pre>
+</details>
+
+<details> 
+    <summary>🎉 高级过滤器</summary>
+    <pre>	✔️ 改变对比度
+    ✔️ 调节亮度
+    ✔️ 调节饱和度
+    ✔️ 低音增强
+    ✔️ 在音频中添加回声
+    ✔️ 创建视频或音频的直方图
+    ✔️ 移除水印
+    ✔️ 改变色相
+    ✔️ 其他过滤器...
+    </pre>
+</details>
+
+<details> 
+    <summary>🌏 上传云</summary>
+    <pre>	❌ 生成预览链接
+    </pre>
+</details>
 
 ## 应用截图
 
@@ -51,6 +74,12 @@ Check status of export and upload
 ## 下载软件
 
 Windows 平台: [最新版](https://github.com/yesmore/clip-room/releases/latest).
+
+
+
+## 开发者须知
+
+
 
 ## 开发文档
 
