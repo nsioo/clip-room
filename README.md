@@ -1,5 +1,5 @@
 <p align="center">
-	<img width='120px' src='.gh/favicon.png' alt=''/>
+	<img width='120px' src='https://cdn.jsdelivr.net/gh/yesmore/img/clip-room/favicon.png' alt=''/>
 </p>
 <h3 align="center">𝑺𝒕𝒓𝒆𝒂𝒎 𝑪𝒍𝒊𝒑 𝑹𝒐𝒐𝒎</h3>
 <p align="center">🎥 使用 Electron 制作的视频编辑器。</p>
@@ -8,6 +8,7 @@
     <img src="https://img.shields.io/github/stars/yesmore/clip-room.svg?logo=github&style=flat-square" alt="star"/>
 	<img src="https://img.shields.io/github/license/yesmore/clip-room?style=flat-square" alt="GPL"/>
 </div>
+
 
 
 
