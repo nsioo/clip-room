@@ -11,7 +11,7 @@
 
 ## 应用截图
 
-![Home](/.gh/clip-home.png?raw=true "Home")
+![Home](./.gh/clip-home.png?raw=true "Home")
 
 
 
