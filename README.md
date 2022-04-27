@@ -11,7 +11,7 @@
 
 ## 应用截图
 
-![Home](./.gh/clip-home.png?raw=true "Home")
+![Home](https://cdn.jsdelivr.net/gh/yesmore/img/clip-room/clip-home.png)
 
 
 
