@@ -11,7 +11,7 @@
                     <!-- <v-img class="logo" v-else :src="`img/favicon.ico`"></v-img> -->
                     
                     <h1>𝑺𝒕𝒓𝒆𝒂𝒎 𝑪𝒍𝒊𝒑 𝑹𝒐𝒐𝒎</h1>
-                    <p>将视频拖到此处或单击按钮以导入</p>
+                    <p>将视频拖到此处或单击按钮以开始</p>
                     <v-btn :disabled="importProjectLoading"
                         :loading="importVideoLoading"
                         @click="promptVideoInput"
