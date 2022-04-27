@@ -16,7 +16,7 @@
                         :loading="importVideoLoading"
                         @click="promptVideoInput"
                         color="primary" rounded>
-                        导入视频
+                        Import Video
                     </v-btn>
                     <div class="undo-redo mt-3">
                         <v-btn @click="undo" text v-if="canUndo">
