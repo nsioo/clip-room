@@ -1,18 +1,18 @@
-import Command from "@/js/commands/Command";
+import Command from '@/js/commands/Command';
 
 export default class SetPlaybackRate extends Command {
-    constructor(fragment, rate) {
-        super("Set playback rate",fragment);
-        this.fragment = fragment;
-        this.oldRate = fragment.playbackRate;
-        this.newRate = rate;
-    }
+  constructor(fragment, rate) {
+    super('Set playback rate', fragment);
+    this.fragment = fragment;
+    this.oldRate = fragment.playbackRate;
+    this.newRate = rate;
+  }
 
-    execute() {
-        this.fragment.playbackRate = this.newRate;
-    }
+  execute() {
+    this.fragment.playbackRate = this.newRate;
+  }
 
-    undo() {
-        this.fragment.playbackRate = this.oldRate;
-    }
+  undo() {
+    this.fragment.playbackRate = this.oldRate;
+  }
 }

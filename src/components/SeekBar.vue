@@ -1,96 +1,102 @@
 <template>
-    <div class="seek" @mousedown="moveStart" ref="seek">
-        <v-sheet color="softBackground" class="seek-background">
-            <v-sheet color="secondary" class="seek-progress" :style="{
-                width: percentage + '%',
-            }"></v-sheet>
-            <v-sheet color="primary" class="seek-thumb" :style="{
-                left: `calc(${percentage}% - 0.25em)`,
-            }"></v-sheet>
-        </v-sheet>
-    </div>
+  <div class="seek" @mousedown="moveStart" ref="seek">
+    <v-sheet color="softBackground" class="seek-background">
+      <v-sheet
+        color="secondary"
+        class="seek-progress"
+        :style="{
+          width: percentage + '%',
+        }"
+      ></v-sheet>
+      <v-sheet
+        color="primary"
+        class="seek-thumb"
+        :style="{
+          left: `calc(${percentage}% - 0.25em)`,
+        }"
+      ></v-sheet>
+    </v-sheet>
+  </div>
 </template>
 
 <script>
-import {mapActions, mapState} from "vuex";
-import Utils from "@/js/Utils";
+import { mapActions, mapState } from 'vuex';
+import Utils from '@/js/Utils';
 
 export default {
-    name: "SeekBar",
-    data: () => ({
-        seekDown: false,
+  name: 'SeekBar',
+  data: () => ({
+    seekDown: false,
+  }),
+  beforeDestroy() {
+    document.removeEventListener('mousemove', this.move);
+    document.removeEventListener('mouseup', this.moveEnd);
+  },
+  mounted() {
+    document.addEventListener('mousemove', this.move, false);
+    document.addEventListener('mouseup', this.moveEnd, false);
+  },
+  methods: {
+    progressFromEvent(e) {
+      let bounds = this.$refs.seek.getBoundingClientRect();
+      let x = e.pageX - bounds.left;
+      return Math.max(Math.min(x / bounds.width, 1), 0);
+    },
+    moveStart(e) {
+      this.seekDown = true;
+      this.seek(this.progressFromEvent(e));
+    },
+    move(e) {
+      if (this.seekDown) this.seek(this.progressFromEvent(e));
+    },
+    moveEnd(e) {
+      if (this.seekDown) this.seek(this.progressFromEvent(e));
+      this.seekDown = false;
+    },
+    ...mapActions(['seek']),
+  },
+  computed: {
+    percentage() {
+      let p = Math.round(this.progress * 100000) / 1000;
+      return Utils.clamp(isNaN(p) ? 0 : p, 0, 100);
+    },
+    ...mapState({
+      progress: (state) => state.player.progress,
     }),
-    beforeDestroy() {
-        document.removeEventListener('mousemove', this.move);
-        document.removeEventListener('mouseup', this.moveEnd);
-    },
-    mounted() {
-        document.addEventListener('mousemove', this.move, false);
-        document.addEventListener('mouseup', this.moveEnd, false);
-    },
-    methods: {
-        progressFromEvent(e) {
-            let bounds = this.$refs.seek.getBoundingClientRect();
-            let x = e.pageX - bounds.left;
-            return Math.max(Math.min(x / bounds.width, 1), 0);
-        },
-        moveStart(e) {
-            this.seekDown = true;
-            this.seek(this.progressFromEvent(e));
-        },
-        move(e) {
-            if (this.seekDown)
-                this.seek(this.progressFromEvent(e));
-        },
-        moveEnd(e) {
-            if (this.seekDown)
-                this.seek(this.progressFromEvent(e));
-            this.seekDown = false;
-        },
-        ...mapActions(['seek']),
-    },
-    computed: {
-        percentage() {
-            let p = Math.round(this.progress * 100000) / 1000;
-            return Utils.clamp(isNaN(p) ? 0 : p, 0, 100);
-        },
-        ...mapState({
-            progress: state => state.player.progress,
-        }),
-    },
-}
+  },
+};
 </script>
 
 <style scoped>
 .seek {
-    width: 100%;
-    padding: 5px 0;
-    cursor: pointer;
+  width: 100%;
+  padding: 5px 0;
+  cursor: pointer;
 }
 
 .seek > * {
-    pointer-events: none;
+  pointer-events: none;
 }
 
 .seek-background {
-    width: 100%;
-    height: 0.5em;
-    border-radius: 0.15em;
+  width: 100%;
+  height: 0.5em;
+  border-radius: 0.15em;
 }
 
 .seek-progress {
-    width: 0;
-    height: 100%;
-    border-bottom-left-radius: 0.15em;
-    border-top-left-radius: 0.15em;
+  width: 0;
+  height: 100%;
+  border-bottom-left-radius: 0.15em;
+  border-top-left-radius: 0.15em;
 }
 
 .seek-thumb {
-    left: 0;
-    top: -0.75em;
-    position: relative;
-    width: 0.5em;
-    height: 1em;
-    border-radius: 0.15em;
+  left: 0;
+  top: -0.75em;
+  position: relative;
+  width: 0.5em;
+  height: 1em;
+  border-radius: 0.15em;
 }
 </style>

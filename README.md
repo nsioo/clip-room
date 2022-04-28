@@ -2,7 +2,7 @@
 	<img width='100px' src='https://cdn.jsdelivr.net/gh/yesmore/img/clip-room/favicon.png' alt=''/>
 </p>
 <h3 align="center">𝑺𝒕𝒓𝒆𝒂𝒎 𝑪𝒍𝒊𝒑 𝑹𝒐𝒐𝒎</h3>
-<p align="center">🎥 使用 Electron 制作的视频编辑器（毕设项目，佛系更新）</p>
+<p align="center">🎥 使用 Electron 制作的视频编辑器（佛系开发中）</p>
 <div style='' align="center">
     <img src="https://img.shields.io/github/downloads/yesmore/clip-room/total.svg?style=flat-square">
     <img src="https://img.shields.io/github/stars/yesmore/clip-room.svg?logo=github&style=flat-square" alt="star"/>
@@ -27,7 +27,7 @@
 </details>
 
 <details> 
-    <summary>😎 调节参数</summary>
+    <summary>😎 视频参数</summary>
     <pre>
     ✔️ 播放速率条件
     ✔️ 视频音量调节
@@ -57,8 +57,6 @@
     ❌ 生成预览链接
     </pre>
 </details>
-
-
 
 ## 下载软件
 

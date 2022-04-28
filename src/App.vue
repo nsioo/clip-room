@@ -1,36 +1,43 @@
 <template>
-    <v-app class="app" :style="cssProps">
+  <v-app class="app" :style="cssProps">
+    <v-app-bar app elevation="1">
+      <custom-header></custom-header>
+    </v-app-bar>
 
-        <v-app-bar app elevation="1">
-            <custom-header></custom-header>
-        </v-app-bar>
+    <v-main class="main">
+      <router-view class="router-view"></router-view>
+    </v-main>
 
-        <v-main class="main">
-            <router-view class="router-view"></router-view>
-        </v-main>
+    <custom-prompt></custom-prompt>
+    <custom-dialog></custom-dialog>
+    <export-dialog></export-dialog>
+    <export-status></export-status>
 
-        <custom-prompt></custom-prompt>
-        <custom-dialog></custom-dialog>
-        <export-dialog></export-dialog>
-        <export-status></export-status>
-
-        <v-snackbar v-for="snack in $store.state.snackbars" app v-model="snack.open" :timeout="snack.timeout"
-                    color="secondary">
-            {{ snack.text }}
-            <template v-slot:action="{ attrs }">
-                <v-btn text v-bind="attrs" :color="$vuetify.theme.dark ? 'default' : 'primary'"
-                       @click="snack.open = false">
-                    Dismiss
-                </v-btn>
-            </template>
-        </v-snackbar>
-    </v-app>
+    <v-snackbar
+      v-for="snack in $store.state.snackbars"
+      app
+      v-model="snack.open"
+      :timeout="snack.timeout"
+      color="secondary"
+    >
+      {{ snack.text }}
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          text
+          v-bind="attrs"
+          :color="$vuetify.theme.dark ? 'default' : 'primary'"
+          @click="snack.open = false"
+        >
+          Dismiss
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </v-app>
 </template>
 
 <script>
 // TODO: Features
 // test for bugs
-
 
 // add audio track to video
 // Advanced export (visualize filter graph)
@@ -134,312 +141,315 @@
 // seek thing on timeline
 // better visualizer for highlighting active fragment
 // amplitude audio wave timeline
-import {mapActions, mapGetters, mapState} from "vuex";
-import CustomHeader from "@/components/CustomHeader";
-import VideoInfoFooter from "@/components/VideoInfoFooter";
-import electron from "electron";
-import contextMenu from "electron-context-menu";
-import Utils from "@/js/Utils";
-import CustomDialog from "@/components/CustomDialog";
-import ExportDialog from "@/components/ExportDialog";
-import ExportStatus from "@/components/ExportStatus";
-import CustomPrompt from "@/components/CustomPrompt";
-
+import { mapActions, mapGetters, mapState } from 'vuex';
+import CustomHeader from '@/components/CustomHeader';
+import VideoInfoFooter from '@/components/VideoInfoFooter';
+import electron from 'electron';
+import contextMenu from 'electron-context-menu';
+import Utils from '@/js/Utils';
+import CustomDialog from '@/components/CustomDialog';
+import ExportDialog from '@/components/ExportDialog';
+import ExportStatus from '@/components/ExportStatus';
+import CustomPrompt from '@/components/CustomPrompt';
 
 export default {
-    name: 'App',
-    components: {CustomPrompt, ExportStatus, ExportDialog, CustomDialog, VideoInfoFooter, CustomHeader},
-    data: () => ({
-        disposeContextMenu: null,
-    }),
-    async mounted() {
-        this.updateSystemProgress();
-        if (location.search.includes('file=video')) {
-            this.$store.commit('importVideoLoading', true);
-        } else if (location.search.includes('file=project')) {
-            this.$store.commit('importProjectLoading', true);
-        }
-        window.addEventListener('resize', this.setWindowWidth, false);
-        document.addEventListener('keydown', this.keyListener, false);
-
-        await this.initialize();
-        console.log(this.$store);
-
-        let electron = window.require('electron');
-        electron.ipcRenderer.on('before-close', async () => {
-            await this.$store.dispatch('secureClose');
-        });
-        electron.ipcRenderer.on('open-file', async (e, args) => {
-            electron.ipcRenderer.send('received-file');
-            if (args.length === 1 && Utils.isProjectFile(args[0])) {
-
-                this.$store.commit('importProjectLoading', true);
-                await this.importProjectByPath(args[0]);
-                this.$store.commit('importProjectLoading', false);
-
-            } else if (args.length > 0) {
-
-                this.$store.commit('importVideoLoading', true);
-                await Promise.all(args.map(p => this.importVideo(p)));
-                this.$store.commit('importVideoLoading', false);
-
-            }
-        });
-
-        this.disposeContextMenu = this.createContextMenu();
-    },
-    beforeDestroy() {
-        this.disposeContextMenu?.()
-        document.removeEventListener('keydown', this.keyListener);
-        window.removeEventListener('resize', this.setWindowWidth);
-    },
-    methods: {
-        createContextMenu() {
-            return contextMenu({
-                prepend: () => [
-                    {
-                        label: "Set start point",
-                        click: () => this.setStartPoint({})
-                    },
-                    {
-                        label: "Set end point",
-                        click: () => this.setEndPoint({})
-                    },
-                    {
-                        label: "Split fragment",
-                        click: () => this.split({})
-                    },
-                    {
-                        label: "Duplicate fragment",
-                        click: () => this.duplicate({})
-                    },
-                ],
-                append: () => [
-                    {
-                        label: "Delete",
-                        click: () => this.removeFragment()
-                    },
-                ],
-                shouldShowMenu: (e, params) => {
-                    let value = this.showContextMenu;
-                    this.$store.commit('showContextMenu', false);
-                    return value;
-                },
-                showInspectElement: false,
-            });
-        },
-        setWindowWidth() {
-            this.$store.commit('windowWidth', window.innerWidth)
-        },
-        keyListener(e) {
-            let ignoredElements = ['[object HTMLTextAreaElement]', '[object HTMLInputElement]'];
-            if (ignoredElements.includes(e.target.toString())) {
-                return;
-            }
-            switch (true) {
-                case e.key === 'n' && e.ctrlKey:
-                    this.newProject();
-                    break;
-                case e.key === 'o' && e.ctrlKey:
-                    this.promptProjectInput();
-                    break;
-                case e.key === 'S' && e.ctrlKey && e.shiftKey:
-                    this.saveProjectAs();
-                    break;
-                case e.key === 's' && e.ctrlKey:
-                    this.saveProject();
-                    break;
-                case e.key === 'Escape':
-                    e.preventDefault();
-                    if (this.fullscreen)
-                        this.$store.commit('fullscreen', false);
-                    break;
-                case e.key === 'F11':
-                    if (!this.hasProject)
-                        return;
-                    e.preventDefault();
-                    if (this.fullscreen)
-                        this.$store.commit('fullscreen', false);
-                    else
-                        this.$store.commit('fullscreen', true);
-                    break;
-                case e.key === ' ':
-                    if (!this.hasProject)
-                        return;
-                    if (this.playing) this.pause();
-                    else this.play();
-                    break;
-                case e.key === 'e' && e.ctrlKey:
-                    if (!this.hasProject)
-                        return;
-                    this.exportVideo()
-                    break;
-                case e.key === 'i' && e.ctrlKey:
-                    this.promptVideoInput()
-                    break;
-                case e.key === 'ArrowLeft':
-                    if (!this.hasProject)
-                        return;
-                    this.skipFrames(-this.activeFragment.video.fps * 5);
-                    break;
-                case e.key === 'ArrowRight':
-                    if (!this.hasProject)
-                        return;
-                    this.skipFrames(this.activeFragment.video.fps * 5);
-                    break;
-                case e.key === 'm':
-                    if (!this.hasProject)
-                        return;
-                    if (this.activeFragment.volume === 0)
-                        this.setVolume({volume: 1});
-                    else
-                        this.setVolume({volume: 0});
-                    break;
-                case e.key === 'ArrowUp':
-                    if (!this.hasProject)
-                        return;
-                    let volumeHigh = this.activeFragment.volume * 1.2;
-                    this.setVolume({volume: volumeHigh});
-                    break;
-                case e.key === 'ArrowDown':
-                    if (!this.hasProject)
-                        return;
-                    let volumeLow = this.activeFragment.volume / 1.2;
-                    this.setVolume({volume: volumeLow});
-                    break;
-                case e.key === '-':
-                    if (!this.hasProject)
-                        return;
-                    let pbrHigh = this.activeFragment.playbackRate / 1.2;
-                    this.setPlaybackRate({playbackRate: pbrHigh});
-                    break;
-                case e.key === '+':
-                case e.key === '=':
-                    if (!this.hasProject)
-                        return;
-                    let pbrLow = this.activeFragment.playbackRate * 1.2;
-                    this.setPlaybackRate({playbackRate: pbrLow});
-                    break;
-                case e.key === ',':
-                    if (!this.hasProject)
-                        return;
-                    this.shiftFragment({shift: -1});
-                    break;
-                case e.key === '.':
-                    if (!this.hasProject)
-                        return;
-                    this.shiftFragment({shift: 1});
-                    break;
-                case e.key === 'Backspace':
-                case e.key === 'Delete':
-                    if (!this.hasProject)
-                        return;
-                    this.removeFragment();
-                    break;
-                case e.key === '\\':
-                    if (!this.hasProject)
-                        return;
-                    this.split({})
-                    break;
-                case e.key === '[':
-                    if (!this.hasProject)
-                        return;
-                    this.setStartPoint({})
-                    break;
-                case e.key === ']':
-                    if (!this.hasProject)
-                        return;
-                    this.setEndPoint({})
-                    break;
-                case e.key === 'd' && e.ctrlKey:
-                    if (!this.hasProject)
-                        return;
-                    this.duplicate({})
-                    break;
-                case e.key === 'y' && e.ctrlKey:
-                case e.key === 'Z' && e.ctrlKey && e.shiftKey:
-                    this.redo();
-                    break;
-                case e.key === 'z' && e.ctrlKey:
-                    this.undo();
-                    break;
-                case e.key === 'r' && e.ctrlKey:
-                    location.reload();
-                    break;
-                case e.key === '`':
-                    this.$store.dispatch('openDevTools');
-                    break;
-                case !isNaN(+e.key):
-                    if (!this.hasProject)
-                        return;
-                    let progress = (+e.key) / 10;
-                    this.seek(progress);
-                    break;
-            }
-        },
-        ...mapActions(['addSnack', 'initialize',
-            'split', 'setStartPoint', 'setEndPoint', 'importVideo',
-            'removeFragment', 'redo', 'undo', 'promptVideoInput',
-            'exportVideo', 'play', 'pause', 'seek', 'importProjectByPath',
-            'skipFrames', 'shiftFragment', 'setVolume', 'setPlaybackRate',
-            'newProject', 'promptProjectInput', 'saveProjectAs', 'saveProject',
-            'updateSystemProgress', 'duplicate',
-        ]),
-    },
-    watch: {
-        systemProgress() {
-            this.updateSystemProgress();
-        },
-    },
-    computed: {
-        cssProps() {
-            console.log(this.$vuetify.theme);
-            return {
-                '--primary': this.themeColors.primary,
-                '--foreground': this.themeColors.foreground,
-                '--soft-foreground': this.themeColors.softForeground,
-                '--soft-background': this.themeColors.softBackground,
-                '--softer-background': this.themeColors.softerBackground,
-                '--secondary': this.themeColors.secondary,
-                '--success': this.themeColors.success,
-                '--error': this.themeColors.error,
-            }
-        },
-        ...mapGetters(['themeColors', 'hasProject', 'systemProgress']),
-        ...mapState({
-            activeFragment: state => state.activeFragment,
-            showContextMenu: state => state.showContextMenu,
-            playing: state => state.player.playing,
-            fullscreen: state => state.player.fullscreen,
-            status: state => state.exportStatus,
-        }),
+  name: 'App',
+  components: {
+    CustomPrompt,
+    ExportStatus,
+    ExportDialog,
+    CustomDialog,
+    VideoInfoFooter,
+    CustomHeader,
+  },
+  data: () => ({
+    disposeContextMenu: null,
+  }),
+  async mounted() {
+    this.updateSystemProgress();
+    if (location.search.includes('file=video')) {
+      this.$store.commit('importVideoLoading', true);
+    } else if (location.search.includes('file=project')) {
+      this.$store.commit('importProjectLoading', true);
     }
+    window.addEventListener('resize', this.setWindowWidth, false);
+    document.addEventListener('keydown', this.keyListener, false);
+
+    await this.initialize();
+    console.log(this.$store);
+
+    let electron = window.require('electron');
+    electron.ipcRenderer.on('before-close', async () => {
+      await this.$store.dispatch('secureClose');
+    });
+    electron.ipcRenderer.on('open-file', async (e, args) => {
+      electron.ipcRenderer.send('received-file');
+      if (args.length === 1 && Utils.isProjectFile(args[0])) {
+        this.$store.commit('importProjectLoading', true);
+        await this.importProjectByPath(args[0]);
+        this.$store.commit('importProjectLoading', false);
+      } else if (args.length > 0) {
+        this.$store.commit('importVideoLoading', true);
+        await Promise.all(args.map((p) => this.importVideo(p)));
+        this.$store.commit('importVideoLoading', false);
+      }
+    });
+
+    this.disposeContextMenu = this.createContextMenu();
+  },
+  beforeDestroy() {
+    this.disposeContextMenu?.();
+    document.removeEventListener('keydown', this.keyListener);
+    window.removeEventListener('resize', this.setWindowWidth);
+  },
+  methods: {
+    createContextMenu() {
+      return contextMenu({
+        prepend: () => [
+          {
+            label: 'Set start point',
+            click: () => this.setStartPoint({}),
+          },
+          {
+            label: 'Set end point',
+            click: () => this.setEndPoint({}),
+          },
+          {
+            label: 'Split fragment',
+            click: () => this.split({}),
+          },
+          {
+            label: 'Duplicate fragment',
+            click: () => this.duplicate({}),
+          },
+        ],
+        append: () => [
+          {
+            label: 'Delete',
+            click: () => this.removeFragment(),
+          },
+        ],
+        shouldShowMenu: (e, params) => {
+          let value = this.showContextMenu;
+          this.$store.commit('showContextMenu', false);
+          return value;
+        },
+        showInspectElement: false,
+      });
+    },
+    setWindowWidth() {
+      this.$store.commit('windowWidth', window.innerWidth);
+    },
+    keyListener(e) {
+      let ignoredElements = ['[object HTMLTextAreaElement]', '[object HTMLInputElement]'];
+      if (ignoredElements.includes(e.target.toString())) {
+        return;
+      }
+      switch (true) {
+        case e.key === 'n' && e.ctrlKey:
+          this.newProject();
+          break;
+        case e.key === 'o' && e.ctrlKey:
+          this.promptProjectInput();
+          break;
+        case e.key === 'S' && e.ctrlKey && e.shiftKey:
+          this.saveProjectAs();
+          break;
+        case e.key === 's' && e.ctrlKey:
+          this.saveProject();
+          break;
+        case e.key === 'Escape':
+          e.preventDefault();
+          if (this.fullscreen) this.$store.commit('fullscreen', false);
+          break;
+        case e.key === 'F11':
+          if (!this.hasProject) return;
+          e.preventDefault();
+          if (this.fullscreen) this.$store.commit('fullscreen', false);
+          else this.$store.commit('fullscreen', true);
+          break;
+        case e.key === ' ':
+          if (!this.hasProject) return;
+          if (this.playing) this.pause();
+          else this.play();
+          break;
+        case e.key === 'e' && e.ctrlKey:
+          if (!this.hasProject) return;
+          this.exportVideo();
+          break;
+        case e.key === 'i' && e.ctrlKey:
+          this.promptVideoInput();
+          break;
+        case e.key === 'ArrowLeft':
+          if (!this.hasProject) return;
+          this.skipFrames(-this.activeFragment.video.fps * 5);
+          break;
+        case e.key === 'ArrowRight':
+          if (!this.hasProject) return;
+          this.skipFrames(this.activeFragment.video.fps * 5);
+          break;
+        case e.key === 'm':
+          if (!this.hasProject) return;
+          if (this.activeFragment.volume === 0) this.setVolume({ volume: 1 });
+          else this.setVolume({ volume: 0 });
+          break;
+        case e.key === 'ArrowUp':
+          if (!this.hasProject) return;
+          let volumeHigh = this.activeFragment.volume * 1.2;
+          this.setVolume({ volume: volumeHigh });
+          break;
+        case e.key === 'ArrowDown':
+          if (!this.hasProject) return;
+          let volumeLow = this.activeFragment.volume / 1.2;
+          this.setVolume({ volume: volumeLow });
+          break;
+        case e.key === '-':
+          if (!this.hasProject) return;
+          let pbrHigh = this.activeFragment.playbackRate / 1.2;
+          this.setPlaybackRate({ playbackRate: pbrHigh });
+          break;
+        case e.key === '+':
+        case e.key === '=':
+          if (!this.hasProject) return;
+          let pbrLow = this.activeFragment.playbackRate * 1.2;
+          this.setPlaybackRate({ playbackRate: pbrLow });
+          break;
+        case e.key === ',':
+          if (!this.hasProject) return;
+          this.shiftFragment({ shift: -1 });
+          break;
+        case e.key === '.':
+          if (!this.hasProject) return;
+          this.shiftFragment({ shift: 1 });
+          break;
+        case e.key === 'Backspace':
+        case e.key === 'Delete':
+          if (!this.hasProject) return;
+          this.removeFragment();
+          break;
+        case e.key === '\\':
+          if (!this.hasProject) return;
+          this.split({});
+          break;
+        case e.key === '[':
+          if (!this.hasProject) return;
+          this.setStartPoint({});
+          break;
+        case e.key === ']':
+          if (!this.hasProject) return;
+          this.setEndPoint({});
+          break;
+        case e.key === 'd' && e.ctrlKey:
+          if (!this.hasProject) return;
+          this.duplicate({});
+          break;
+        case e.key === 'y' && e.ctrlKey:
+        case e.key === 'Z' && e.ctrlKey && e.shiftKey:
+          this.redo();
+          break;
+        case e.key === 'z' && e.ctrlKey:
+          this.undo();
+          break;
+        case e.key === 'r' && e.ctrlKey:
+          location.reload();
+          break;
+        case e.key === '`':
+          this.$store.dispatch('openDevTools');
+          break;
+        case !isNaN(+e.key):
+          if (!this.hasProject) return;
+          let progress = +e.key / 10;
+          this.seek(progress);
+          break;
+      }
+    },
+    ...mapActions([
+      'addSnack',
+      'initialize',
+      'split',
+      'setStartPoint',
+      'setEndPoint',
+      'importVideo',
+      'removeFragment',
+      'redo',
+      'undo',
+      'promptVideoInput',
+      'exportVideo',
+      'play',
+      'pause',
+      'seek',
+      'importProjectByPath',
+      'skipFrames',
+      'shiftFragment',
+      'setVolume',
+      'setPlaybackRate',
+      'newProject',
+      'promptProjectInput',
+      'saveProjectAs',
+      'saveProject',
+      'updateSystemProgress',
+      'duplicate',
+    ]),
+  },
+  watch: {
+    systemProgress() {
+      this.updateSystemProgress();
+    },
+  },
+  computed: {
+    cssProps() {
+      console.log(this.$vuetify.theme);
+      return {
+        '--primary': this.themeColors.primary,
+        '--foreground': this.themeColors.foreground,
+        '--soft-foreground': this.themeColors.softForeground,
+        '--soft-background': this.themeColors.softBackground,
+        '--softer-background': this.themeColors.softerBackground,
+        '--secondary': this.themeColors.secondary,
+        '--success': this.themeColors.success,
+        '--error': this.themeColors.error,
+      };
+    },
+    ...mapGetters(['themeColors', 'hasProject', 'systemProgress']),
+    ...mapState({
+      activeFragment: (state) => state.activeFragment,
+      showContextMenu: (state) => state.showContextMenu,
+      playing: (state) => state.player.playing,
+      fullscreen: (state) => state.player.fullscreen,
+      status: (state) => state.exportStatus,
+    }),
+  },
 };
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,400i,500,600,700,800,900&display=swap');
-@import url('https://cdn.materialdesignicons.com/5.0.45/css/materialdesignicons.min.css');
+@import url('./assets/css/materialdesignicons.min.css');
 
-html, body {
-    overflow: hidden;
+html,
+body {
+  overflow: hidden;
 }
 
 h1 {
-    font-size: 1.8rem;
+  font-size: 1.8rem;
 }
 
-h1, h2, h3, h4, h5 {
-    font-weight: bold;
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: bold;
 }
 
 .app {
-    user-select: none;
-    font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
+  user-select: none;
+  font-family: Roboto, Helvetica Neue, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
 .main {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 </style>
