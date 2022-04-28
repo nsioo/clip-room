@@ -172,18 +172,22 @@ export default {
       commit('statusOutput', []);
       commit('statusError', '');
     },
+    // 导出视频核心函数
     async exportVideo({ dispatch, rootState, getters, commit }) {
       if (getters.isExporting) {
         dispatch('addSnack', {
-          text: 'A video is already exporting, abort it before trying again',
+          text: '一个导出任务正在进行中，请稍后再试',
         });
         return false;
       }
 
       return new Promise((resolve, reject) => {
+        // 重置导出状态
         dispatch('resetExportStatus');
+        // 显示导出进度条
         commit('showExportStatus', true);
 
+        // 实例化 ffmpeg 对象
         let command = ffmpeg();
         commit('statusCommand', command);
 
@@ -192,6 +196,7 @@ export default {
             .input(Utils.fixPath(video.filePath))
             .seekInput(getters.earliestStart(video));
         }
+        //  
         command = command
           .complexFilter(...getters.complexFilter)
           .on('start', (commandLine) => {
@@ -216,6 +221,7 @@ export default {
         command.saveToFile(rootState.export.outputPath);
       });
     },
+    
     async getLoudness({}, { filePath, loudness = {} }) {
       return new Promise((resolve, reject) => {
         let min = Infinity,

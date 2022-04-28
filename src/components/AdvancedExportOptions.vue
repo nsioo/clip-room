@@ -7,9 +7,10 @@
       outlined
       hide-details="auto"
       type="search"
-      label="Search filters"
+      label="搜索过滤器"
       v-model="term"
     ></v-text-field>
+    
     <v-virtual-scroll :bench="1" :items="filteredFilters" height="300" item-height="64">
       <template v-slot:default="{ item: filter }">
         <v-list-item :key="filter.name">
@@ -52,11 +53,12 @@ export default {
   methods: {
     async selectFilter(filter) {
       let { confirmed, value } = await this.showTextPrompt({
-        title: `Add filter - ${filter.name}`,
-        subtitle: `${filter.description}<br>Discover options by clicking the (i) next to the filter.`,
+        title: `添加过滤器: ${filter.name}`,
+        subtitle: `${filter.description}<br>单击 (i) 了解配置项详情.`,
         value: filter.options,
-        label: 'Options (optional)',
-        confirmText: 'Add',
+        label: '参数值 (可选)',
+        confirmText: '添加',
+        cancelText: '取消',
       });
 
       if (confirmed) {

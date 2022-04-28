@@ -2,6 +2,96 @@
   <v-dialog v-model="$store.state.export.showDialog" width="700">
     <v-card>
       <v-expansion-panels accordion multiple v-model="panel">
+        
+        <!-- 导出选项 -->
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div>
+              <v-icon class="mr-3">mdi-cog</v-icon>
+              导出选项
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-text-field
+              label="输出 FPS (可选)"
+              outlined
+              dense
+              hide-details="auto"
+              class="mb-4"
+              v-model="$store.state.export.fps"
+              type="number"
+            ></v-text-field>
+            <v-switch
+              v-if="$store.state.export.fps !== ''"
+              label="插值帧"
+              inset
+              dense
+              class="interpolate-switch"
+              v-model="$store.state.export.interpolate"
+            ></v-switch>
+            <v-text-field
+              label="输出比特率 (MB/s, 可选)"
+              outlined
+              dense
+              v-model="$store.state.export.bitrate"
+              hide-details="auto"
+              type="number"
+            ></v-text-field>
+            <v-switch
+              v-model="$store.state.export.customResolution"
+              inset
+              dense
+              label="修改分辨率"
+            ></v-switch>
+            <div class="resolution mb-2">
+              <v-text-field
+                label="Width"
+                outlined
+                :disabled="!$store.state.export.customResolution"
+                dense
+                class="mr-2"
+                hide-details="auto"
+                v-model="exportWidth"
+                type="number"
+              ></v-text-field>
+              <v-text-field
+                label="Height"
+                :disabled="!$store.state.export.customResolution"
+                outlined
+                class="ml-2"
+                dense
+                hide-details="auto"
+                v-model="exportHeight"
+                type="number"
+              ></v-text-field>
+            </div>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <!-- 高级选项 -->
+        <v-expansion-panel>
+          <v-expansion-panel-header>
+            <div>
+              <v-icon class="mr-3">mdi-movie-filter-outline</v-icon>
+              高级选项
+            </div>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <v-chip-group class="chip-group" show-arrows>
+              <v-chip
+                @click="editFilter(filter)"
+                color="secondary"
+                :close="true"
+                class="mb-2"
+                @click:close="removeFilter(filter)"
+                v-for="filter in selectedFilters"
+              >
+                {{ filter.name }}{{ filter.options === '' ? '' : '=' }}{{ filter.options }}
+              </v-chip>
+            </v-chip-group>
+            <advanced-export-options></advanced-export-options>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+        <!-- youtube配置 -->
         <v-expansion-panel :disabled="!youtube.show">
           <v-expansion-panel-header>
             <div>
@@ -9,6 +99,7 @@
               YouTube
             </div>
           </v-expansion-panel-header>
+
           <v-expansion-panel-content>
             <v-text-field
               label="Title"
@@ -40,92 +131,6 @@
             </v-chip-group>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div>
-              <v-icon class="mr-3">mdi-cog</v-icon>
-              Export settings
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-text-field
-              label="Output FPS (optional)"
-              outlined
-              dense
-              hide-details="auto"
-              class="mb-4"
-              v-model="$store.state.export.fps"
-              type="number"
-            ></v-text-field>
-            <v-switch
-              v-if="$store.state.export.fps !== ''"
-              label="Interpolate frames"
-              inset
-              dense
-              class="interpolate-switch"
-              v-model="$store.state.export.interpolate"
-            ></v-switch>
-            <v-text-field
-              label="Video bitrate (MB/s, optional)"
-              outlined
-              dense
-              v-model="$store.state.export.bitrate"
-              hide-details="auto"
-              type="number"
-            ></v-text-field>
-            <v-switch
-              v-model="$store.state.export.customResolution"
-              inset
-              dense
-              label="Change output resolution"
-            ></v-switch>
-            <div class="resolution mb-2">
-              <v-text-field
-                label="Width"
-                outlined
-                :disabled="!$store.state.export.customResolution"
-                dense
-                class="mr-2"
-                hide-details="auto"
-                v-model="exportWidth"
-                type="number"
-              ></v-text-field>
-              <v-text-field
-                label="Height"
-                :disabled="!$store.state.export.customResolution"
-                outlined
-                class="ml-2"
-                dense
-                hide-details="auto"
-                v-model="exportHeight"
-                type="number"
-              ></v-text-field>
-            </div>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-        <v-expansion-panel>
-          <v-expansion-panel-header>
-            <div>
-              <v-icon class="mr-3">mdi-movie-filter-outline</v-icon>
-              Advanced options
-            </div>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <v-chip-group class="chip-group" show-arrows>
-              <v-chip
-                @click="editFilter(filter)"
-                color="secondary"
-                :close="true"
-                class="mb-2"
-                @click:close="removeFilter(filter)"
-                v-for="filter in selectedFilters"
-              >
-                {{ filter.name }}{{ filter.options === '' ? '' : '=' }}{{ filter.options }}
-              </v-chip>
-            </v-chip-group>
-            <advanced-export-options></advanced-export-options>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
       </v-expansion-panels>
 
       <v-divider></v-divider>
@@ -152,7 +157,9 @@ export default {
     pathRules: [(v) => path.isAbsolute(v) || 'Must be a valid path'],
     panel: [0, 1],
   }),
-  mounted() {},
+  mounted() {
+   
+  },
   methods: {
     async editFilter(filter) {
       let { confirmed, value } = await this.showTextPrompt({
@@ -184,8 +191,7 @@ export default {
   watch: {
     'export.showDialog'() {
       if (this.export.showDialog) {
-        if (this.youtube.show) this.panel = [0];
-        else this.panel = [1];
+        this.panel = [0];
       }
     },
   },

@@ -1,3 +1,6 @@
+/**
+ * 命令 - 添加片段
+ */
 import Command from '@/js/commands/Command';
 
 export default class AddFragment extends Command {

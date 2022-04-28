@@ -28,7 +28,7 @@
           :color="$vuetify.theme.dark ? 'default' : 'primary'"
           @click="snack.open = false"
         >
-          Dismiss
+          忽略
         </v-btn>
       </template>
     </v-snackbar>

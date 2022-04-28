@@ -149,6 +149,7 @@ export default {
       // localStorage['previousPath' + key] = path.dirname(usedPath);
       localStorage['previousPath' + key] = usedPath;
     },
+    // 视频导出提示
     async promptVideoExport({ dispatch, commit }) {
       let formats = await dispatch('getFormats');
 
@@ -165,6 +166,7 @@ export default {
       }
       return { canceled, filePath };
     },
+    // 导出视频
     async exportVideoAs({ commit, dispatch, getters }) {
       if (!getters.hasProject) return;
       let { canceled, filePath } = await dispatch('promptVideoExport');

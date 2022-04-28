@@ -1,3 +1,6 @@
+/**
+ * 命令 - 基类
+ */
 export default class Command {
   constructor(name, batchOn = false) {
     this.batchOn = batchOn;

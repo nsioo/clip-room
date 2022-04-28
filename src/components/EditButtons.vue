@@ -3,15 +3,15 @@
     <v-sheet class="edit-buttons" color="softBackground">
       <div class="flow-buttons">
         <v-btn :disabled="!canCut" small rounded text @click="split">
-          <span class="button-caption button-layout">切割</span>
+          <span class="button-caption button-layout">分割</span>
           <v-icon small>mdi-arrow-split-vertical</v-icon>
         </v-btn>
         <v-btn :disabled="!canCut" small rounded text @click="setStartPoint">
-          <span class="button-caption button-layout">起始位</span>
+          <span class="button-caption button-layout">设置起始位</span>
           <v-icon small>mdi-contain-start</v-icon>
         </v-btn>
         <v-btn :disabled="!canCut" small rounded text @click="setEndPoint">
-          <span class="button-caption button-layout">结束位</span>
+          <span class="button-caption button-layout">设置结束位</span>
           <v-icon small>mdi-contain-end</v-icon>
         </v-btn>
       </div>
