@@ -150,13 +150,14 @@ export default {
       VideoFile.ffmpegPath = state.paths.ffmpeg;
       ffmpeg.setFfmpegPath(state.paths.ffmpeg);
       ffmpeg.setFfprobePath(state.paths.ffprobe);
-      console.log('ffmpeg and ffprobe have been retrieved', { ffmpeg });
+      console.log('已检测到 ffmpeg & ffprobe: ', { ffmpeg });
       setTimeout(() => {
         state.ffmpegReady = true;
         state.downloadEvent.emit('ffmpegReady');
         dispatch('getFilters');
       }, 800);
     },
+    // 重置状态
     resetYouTubeStatus({ commit }) {
       commit('ytDone', false);
       commit('ytUrl', '');
@@ -166,6 +167,7 @@ export default {
         percent: 0,
       });
     },
+    // 重置状态
     resetExportStatus({ commit }) {
       commit('statusDone', false);
       commit('statusProgress', 0);
@@ -196,11 +198,12 @@ export default {
             .input(Utils.fixPath(video.filePath))
             .seekInput(getters.earliestStart(video));
         }
-        //  
+
+        // 执行导出命令
         command = command
           .complexFilter(...getters.complexFilter)
           .on('start', (commandLine) => {
-            console.log('Spawned ffmepg with command', commandLine);
+            console.log('执行 ffmepg 命令: ', commandLine);
             commit('addStatusOutput', commandLine);
           })
           .on('stderr', (line) => commit('addStatusOutput', line))
@@ -221,7 +224,7 @@ export default {
         command.saveToFile(rootState.export.outputPath);
       });
     },
-    
+    // 获取音量
     async getLoudness({}, { filePath, loudness = {} }) {
       return new Promise((resolve, reject) => {
         let min = Infinity,

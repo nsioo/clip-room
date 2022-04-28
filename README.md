@@ -60,7 +60,7 @@
 
 ## 下载软件
 
-Windows 平台: [最新版](https://github.com/yesmore/clip-room/releases/latest).
+Windows 平台: [最新版](https://github.com/yesmore/clip-room/releases/latest)（暂未上线）.
 
 ## 开发者须知
 

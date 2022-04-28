@@ -37,7 +37,7 @@ export default {
   data: () => ({}),
   beforeDestroy() {},
   mounted() {
-    console.log(this.complexFilter);
+    console.log('过滤器配置：', this.complexFilter);
     console.log(this.colors);
   },
   methods: {},
