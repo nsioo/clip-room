@@ -73,6 +73,8 @@ export default {
             break;
           }
         }
+
+        // ffmpeg fillter command params
         filter.push({
           filter: parseFilter([
             ['atrim', `start=${start}:end=${end}`],
@@ -84,13 +86,16 @@ export default {
           outputs: 'a' + i,
         });
       }
+
+      // concat video command
       filter.push({
         filter: 'concat',
         options: `n=${fragments.length}:a=1`,
         inputs: fragments.flatMap((f, i) => ['v' + i, 'a' + i]),
         outputs: ['out', 'outa'],
       });
-      if (rootState.export.customResolution)
+
+      if (rootState.export.customResolution) {
         filter.push({
           inputs: 'out',
           filter: 'scale',
@@ -101,7 +106,9 @@ export default {
           },
           outputs: 'out',
         });
-      if (rootState.export.fps !== '' && rootState.export.interpolate)
+      }
+        
+      if (rootState.export.fps !== '' && rootState.export.interpolate) {
         filter.push({
           inputs: 'out',
           filter: 'minterpolate',
@@ -110,7 +117,7 @@ export default {
           },
           outputs: 'out',
         });
-      else if (rootState.export.fps !== '')
+      } else if (rootState.export.fps !== '')
         filter.push({
           inputs: 'out',
           filter: 'fps',

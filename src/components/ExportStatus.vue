@@ -22,7 +22,7 @@
       </template>
       <v-card-title v-if="isUploading"> 2/2 - Uploading video </v-card-title>
       <v-card-title v-else-if="isExporting">
-        {{ status.youtube ? '1/2 - ' : '' }}导出中
+        {{ status.youtube ? '1/2 - ' : '' }}正在导出
       </v-card-title>
       <v-card-title v-else-if="status.error !== ''">
         <v-icon color="warning" class="mr-2">mdi-alert-outline</v-icon>
@@ -153,10 +153,10 @@ export default {
       if (this.isUploading) {
         let uploaded = Utils.readableBytes(this.youtube.progress.uploaded);
         let total = Utils.readableBytes(this.youtube.progress.total);
-        return `Uploaded: ${uploaded} / ${total}`;
+        return `已上传: ${uploaded} / ${total}`;
       } else if (this.isExporting) {
         let time = this.status.progress.timemark?.substr(3) ?? '00:00.00';
-        return `Exported: ${time} / ${this.toHms(this.fullDuration)}`;
+        return `已导出: ${time} / ${this.toHms(this.fullDuration)}`;
       }
       return '';
     },
