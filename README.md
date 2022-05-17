@@ -1,5 +1,5 @@
 <p align="center">
-	<img width='100px' src='https://cdn.jsdelivr.net/gh/yesmore/img/clip-room/favicon.png' alt=''/>
+	<img width='100px' src='https://fastly.jsdelivr.net/gh/yesmore/img/clip-room/favicon.png' alt=''/>
 </p>
 <h3 align="center">𝑺𝒕𝒓𝒆𝒂𝒎 𝑪𝒍𝒊𝒑 𝑹𝒐𝒐𝒎</h3>
 <p align="center">🎥 使用 Electron 制作的视频编辑器（佛系开发中）</p>
@@ -11,9 +11,9 @@
 
 ## 预览图
 
-![Home](https://cdn.jsdelivr.net/gh/yesmore/img/clip-room/clip-home.png)
+![Home](https://fastly.jsdelivr.net/gh/yesmore/img/clip-room/clip-home.png)
 
-![editor](https://cdn.jsdelivr.net/gh/yesmore/img/clip-room/clip-editor.png)
+![editor](https://fastly.jsdelivr.net/gh/yesmore/img/clip-room/clip-editor.png)
 
 > 预览图与最新版可能存在偏差，不影响正常使用
 
@@ -59,7 +59,6 @@
   ❌ 生成预览链接
     </pre>
 </details>
-
 
 ## 下载软件
 
