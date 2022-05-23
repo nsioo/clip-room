@@ -65,6 +65,7 @@
       </span>
     </div>
 
+    <!-- 导出 -->
     <div class="right-content">
       <!-- 导出动画 -->
       <v-btn
@@ -197,7 +198,7 @@ export default {
       if (this.$route.path !== '/') this.$router.push('/');
     },
     ...mapActions([
-      'promptVideoInput',
+      'promptVideoInput', // Func 1：导入视频
       'exportVideoAs',
       'secureClose',
       'promptProjectInput',

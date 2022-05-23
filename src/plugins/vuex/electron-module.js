@@ -1,9 +1,14 @@
+/**
+ * Electron module
+ */
 import electron, { remote } from 'electron';
 import path from 'path';
 import ofs from 'fs';
 import Directories from '@/js/Directories';
 
 const fs = ofs.promises;
+// remote模块 - 主进程 & 渲染进程通信
+// 获取当前窗口
 const currentWindow = remote.getCurrentWindow();
 
 export default {
@@ -77,10 +82,11 @@ export default {
   },
   getters: {
     appVersion: () => {
-      return remote.app.getVersion();
+      return remote.app.getVersion(); // 获取应用程序的版本号
     },
+    // 进程状态
     systemProgress: (state, getters, rootState) => {
-      let status = rootState.exportStatus;
+      let status = rootState.exportStatus; // 获取导出状态
       if (getters.isExporting && getters.exportProgress <= 0) {
         return [getters.exportProgress, { mode: 'indeterminate' }];
       } else if (getters.isExporting) {
@@ -140,9 +146,12 @@ export default {
         });
       });
     },
+    // 上次导入视频路径
     previousPath({}, { key = '', defaultPath = Directories.videos }) {
+      // 获取缓存路径
       return localStorage.getItem('previousPath' + key) ?? defaultPath;
     },
+    // 缓存资源路径
     usePath({}, { key = '', usedPath }) {
       localStorage['previousPath' + key] = usedPath;
     },
@@ -174,23 +183,28 @@ export default {
       return canceled;
     },
     
+    // Func 1：导入本地视频
     async promptVideoInput({ dispatch, commit }) {
+      // 打开一个文件选择框窗口
       let { canceled, filePaths } = await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
-        title: 'Import video',
-        defaultPath: await dispatch('previousPath', { key: 'video' }),
-        filters: [
+        title: 'Import video', // 窗口标题
+        defaultPath: await dispatch('previousPath', { key: 'video' }), // 默认路径
+        filters: [ // 可选文件扩展
           { name: 'Videos', extensions: ['mp4', 'ogg', 'webm', 'mp3', 'wav'] },
           { name: 'All Files', extensions: ['*'] },
         ],
-        properties: ['openFile', 'multiSelections'],
+        properties: ['openFile', 'multiSelections'], // 配置项：打开文件 & 多选文件
       });
+      // 已视频文件
       if (!canceled) {
-        dispatch('usePath', { key: 'video', usedPath: filePaths[0] });
-        commit('importVideoLoading', true);
-        await Promise.all(filePaths.map((f) => dispatch('importVideo', f)));
-        commit('importVideoLoading', false);
+        dispatch('usePath', { key: 'video', usedPath: filePaths[0] }); // 缓存路径
+        commit('importVideoLoading', true); // 导入中加载状态
+        await Promise.all(filePaths.map((f) => dispatch('importVideo', f))); // 执行导入视频
+        commit('importVideoLoading', false); // 导入完成
       }
     },
+
+    // Fun : 导入工程
     async importProjectByPath({ dispatch, commit }, filePath) {
       try {
         let data = await fs.readFile(filePath);
@@ -200,6 +214,8 @@ export default {
         dispatch('addSnack', { text: '无法打开项目' });
       }
     },
+
+    // 
     async promptProjectInput({ dispatch }) {
       if (!(await dispatch('discardChangesPrompt'))) return;
       let { canceled, filePaths } = await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {

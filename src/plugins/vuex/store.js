@@ -37,16 +37,6 @@ export default new Vuex.Store({
       error: '',
       command: null,
     },
-    // youtube: {
-    //   privacy: 1,
-    //   show: false,
-    //   title: '',
-    //   description: '',
-    //   upload: false,
-    //   done: false,
-    //   progress: 0,
-    //   url: '',
-    // },
     export: {
       filters: [],
       showDialog: false,
@@ -67,8 +57,8 @@ export default new Vuex.Store({
     showContextMenu: false,
     activeFragment: null,
     loading: {
-      videoImport: false,
-      projectImport: false,
+      videoImport: false, // 视频导入加载
+      projectImport: false, // 项目导入加载
     },
     configTimeline: {
       minFragmentWidth: 90,
@@ -330,9 +320,10 @@ export default new Vuex.Store({
     removeFragment({ state, dispatch }, fragment = state.activeFragment) {
       dispatch('executeCommand', new DeleteFragment(fragment));
     },
+    // Func 1.1：导入视频主逻辑
     async importVideo({ dispatch }, path) {
       try {
-        let videoFile = await dispatch('loadMetadata', path);
+        let videoFile = await dispatch('loadMetadata', path); // 1.1.1 获取视频信息
         let fragment = new VideoFragment(videoFile);
         dispatch('executeCommand', new AddFragment(fragment));
       } catch (e) {

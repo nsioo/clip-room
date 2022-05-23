@@ -152,6 +152,7 @@ export default {
     },
   },
   actions: {
+    // 初始化 ffmpeg
     async initializeFfmpeg({ dispatch, state }) {
       await dispatch('getPaths');
       VideoFile.ffmpegPath = state.paths.ffmpeg;
@@ -323,6 +324,7 @@ export default {
         });
       });
     },
+    // 等待 ffmpeg 初始化完成
     async waitForFfmpeg({ state }) {
       return new Promise((resolve) => {
         if (state.ffmpegReady) resolve();
@@ -354,20 +356,23 @@ export default {
         canvas.toBlob((b) => resolve(URL.createObjectURL(b)), 'image/jpg');
       });
     },
+    // Func 1.1.1：获取视频信息
     async loadMetadata({ state, commit, dispatch }, file) {
       if (!state.videoFileCache.hasOwnProperty(file)) {
         console.log(`Loading metadata for ${file}`);
+
         // Wait for getPaths to be done
-        await dispatch('waitForFfmpeg');
-        let result = await ffmpeg.ffprobe(file); // TOFix
-        let duration = result.format.duration;
+        await dispatch('waitForFfmpeg'); // 等待ffmpeg准备好
+        // Fix C:\Users\24216\AppData\Roaming\cliproom-files
+        let result = await ffmpeg.ffprobe(file); 
+        let duration = result.format.duration; // 视频时长
 
         // 1 screenshot per minute
-        let ssCount = Math.ceil(duration / 60);
+        let ssCount = Math.ceil(duration / 60); // 截图数量
         let promises = [];
         for (let i = 0; i < ssCount; i++) {
-          let timeStamp = (duration / ssCount) * i;
-          promises.push(ffmpeg.screenshot(file, Directories.temp, timeStamp));
+          let timeStamp = (duration / ssCount) * i; // 截图时间戳
+          promises.push(ffmpeg.screenshot(file, Directories.temp, timeStamp)); // 截图
         }
         let screenshots = { all: [], merged: '' };
         Promise.all(promises).then(async (ss) => {

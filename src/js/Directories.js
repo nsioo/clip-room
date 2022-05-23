@@ -4,9 +4,9 @@ import path from 'path';
 
 class Directories {
   constructor() {
-    this.temp = this.initializeDir('temp', 'moviemaker');
-    this.files = this.initializeDir('appData', 'moviemaker-files');
-    this.videos = this.getDir('videos', '');
+    this.temp = this.initializeDir('temp', 'cliproom'); // 临时文件夹
+    this.files = this.initializeDir('appData', 'cliproom-files'); // 应用文件夹
+    this.videos = this.getDir('videos', ''); // 视频路径
   }
 
   initializeDir(base, dir) {
@@ -15,16 +15,19 @@ class Directories {
     return fullDir;
   }
 
+  // 获取路径
   getDir(base = 'music', dir = 'files') {
     let app = electron.app;
     if (electron.hasOwnProperty('remote')) app = electron.remote.app;
     return path.join(app.getPath(base), dir);
   }
 
+  // 创建文件夹
   createDir(dir) {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir);
   }
 
+  // 导入上次文件
   importLSFile() {
     let localStorageFile = path.join(this.files, 'ls.json');
 

@@ -278,7 +278,7 @@ export default {
           this.exportVideo();
           break;
         case e.key === 'i' && e.ctrlKey:
-          this.promptVideoInput();
+          this.promptVideoInput(); // Func 1：导入视频
           break;
         case e.key === 'ArrowLeft':
           if (!this.hasProject) return;
