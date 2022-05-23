@@ -91,46 +91,7 @@
             <advanced-export-options></advanced-export-options>
           </v-expansion-panel-content>
         </v-expansion-panel>
-        <!-- youtube配置 -->
-        <v-expansion-panel :disabled="!youtube.show">
-          <v-expansion-panel-header>
-            <div>
-              <v-icon class="mr-3" :color="youtube.show ? 'red' : ''">mdi-youtube</v-icon>
-              YouTube
-            </div>
-          </v-expansion-panel-header>
-
-          <v-expansion-panel-content>
-            <v-text-field
-              label="Title"
-              outlined
-              hide-details="auto"
-              class="mb-4"
-              dense
-              v-model="$store.state.youtube.title"
-            >
-            </v-text-field>
-            <v-textarea
-              rows="3"
-              label="Description"
-              hide-details="auto"
-              outlined
-              dense
-              v-model="$store.state.youtube.description"
-            >
-            </v-textarea>
-            <v-chip-group
-              color="primary"
-              mandatory
-              class="mt-2"
-              v-model="$store.state.youtube.privacy"
-            >
-              <v-chip>Public</v-chip>
-              <v-chip>Unlisted</v-chip>
-              <v-chip>Private</v-chip>
-            </v-chip-group>
-          </v-expansion-panel-content>
-        </v-expansion-panel>
+        
       </v-expansion-panels>
 
       <v-divider></v-divider>
@@ -138,7 +99,7 @@
         <v-spacer></v-spacer>
         <v-btn text @click="cancel"> 取消 </v-btn>
         <v-btn color="primary" text @click="confirm">
-          {{ youtube.show ? '上传' : '导出' }}
+          导出
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -178,15 +139,11 @@ export default {
       this.$store.commit('showExportDialog', false);
     },
     async confirm() {
-      if (this.youtube.show) {
-        this.exportToYouTube();
-        this.$store.commit('showExportDialog', false);
-      } else {
-        let canceled = await this.exportVideoAs();
-        if (!canceled) this.$store.commit('showExportDialog', false);
-      }
+      let canceled = await this.exportVideoAs();
+      if (!canceled) this.$store.commit('showExportDialog', false);
+      
     },
-    ...mapActions(['promptVideoExport', 'showTextPrompt', 'exportVideoAs', 'exportToYouTube']),
+    ...mapActions(['promptVideoExport', 'showTextPrompt', 'exportVideoAs']),
   },
   watch: {
     'export.showDialog'() {
@@ -225,7 +182,6 @@ export default {
     ...mapState({
       outputPath: (state) => state.export.outputPath,
       selectedFilters: (state) => state.export.filters,
-      youtube: (state) => state.youtube,
       export: (state) => state.export,
     }),
   },

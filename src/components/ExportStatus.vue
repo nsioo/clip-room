@@ -9,37 +9,27 @@
         ></v-progress-linear>
         <v-progress-linear
           :indeterminate="exportProgress <= 0"
-          v-else-if="isExporting || (status.done && !status.youtube) || youtube.done"
+          v-else-if="isExporting || status.done"
           color="success"
           :value="exportProgress * 100"
         ></v-progress-linear>
-        <v-progress-linear
-          :indeterminate="exportProgress <= 0"
-          v-else-if="isUploading"
-          color="red"
-          :value="youtube.progress.percent * 100"
-        ></v-progress-linear>
       </template>
-      <v-card-title v-if="isUploading"> 2/2 - Uploading video </v-card-title>
-      <v-card-title v-else-if="isExporting">
-        {{ status.youtube ? '1/2 - ' : '' }}正在导出
+     
+      <v-card-title v-if="isExporting">
+        正在导出
       </v-card-title>
       <v-card-title v-else-if="status.error !== ''">
         <v-icon color="warning" class="mr-2">mdi-alert-outline</v-icon>
         视频导出出错！
       </v-card-title>
-      <v-card-title v-else-if="status.youtube">
-        <v-icon color="success" class="mr-2">mdi-check</v-icon>
-        上传完成
-      </v-card-title>
       <v-card-title v-else>
         <v-icon color="success" class="mr-2">mdi-check</v-icon>
         导出成功
       </v-card-title>
-      <v-card-subtitle v-if="!status.youtube">
+      <v-card-subtitle>
         {{ outputPath }}
       </v-card-subtitle>
-      <v-card-text v-if="isUploading || isExporting">
+      <v-card-text v-if="isExporting">
         {{ speed }}
       </v-card-text>
       <div v-if="status.error !== ''">
@@ -65,12 +55,12 @@
           text
           color="error"
           @click="abort"
-          v-if="(isUploading || isExporting) && status.error === ''"
+          v-if="isExporting && status.error === ''"
         >
           终止
         </v-btn>
         <v-btn text @click="dismiss" v-else-if="status.error !== ''"> 关闭 </v-btn>
-        <div v-else-if="!status.youtube">
+        <div v-else>
           <v-tooltip top>
             <template v-slot:activator="{ on, attrs }">
               <v-btn class="mr-2" icon @click="openFolder(outputPath)" v-bind="attrs" v-on="on">
@@ -86,24 +76,6 @@
               </v-btn>
             </template>
             <span>打开视频</span>
-          </v-tooltip>
-          <v-btn text @click="dismiss"> 关闭 </v-btn>
-        </div>
-        <div v-else>
-          <v-tooltip top>
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                class="mr-2"
-                icon
-                @click="openFile(youtube.url)"
-                v-bind="attrs"
-                color="red"
-                v-on="on"
-              >
-                <v-icon>mdi-youtube</v-icon>
-              </v-btn>
-            </template>
-            <span>在YouTube打开</span>
           </v-tooltip>
           <v-btn text @click="dismiss"> 关闭 </v-btn>
         </div>
@@ -126,8 +98,6 @@ export default {
     abort() {
       if (this.isExporting) {
         this.status.command.kill();
-      } else if (this.isUploading) {
-        this.cancelUpload();
       }
     },
     ...mapActions([
@@ -135,7 +105,6 @@ export default {
       'cancelUpload',
       'openFolder',
       'showTextPrompt',
-      'resetYouTubeStatus',
       'resetExportStatus',
     ]),
   },
@@ -143,28 +112,22 @@ export default {
     'status.show'() {
       if (!this.status.show && this.status.error !== '') {
         // when dismissing error, reset status stuff
-        this.resetYouTubeStatus();
         this.resetExportStatus();
       }
     },
   },
   computed: {
     speed() {
-      if (this.isUploading) {
-        let uploaded = Utils.readableBytes(this.youtube.progress.uploaded);
-        let total = Utils.readableBytes(this.youtube.progress.total);
-        return `已上传: ${uploaded} / ${total}`;
-      } else if (this.isExporting) {
+      if (this.isExporting) {
         let time = this.status.progress.timemark?.substr(3) ?? '00:00.00';
         return `已导出: ${time} / ${this.toHms(this.fullDuration)}`;
       }
       return '';
     },
-    ...mapGetters(['exportProgress', 'isExporting', 'isUploading', 'fullDuration', 'toHms']),
+    ...mapGetters(['exportProgress', 'isExporting', 'fullDuration', 'toHms']),
     ...mapState({
       status: (state) => state.exportStatus,
       outputPath: (state) => state.export.outputPath,
-      youtube: (state) => state.youtube,
     }),
   },
 };

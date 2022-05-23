@@ -85,8 +85,6 @@ export default {
         return [getters.exportProgress, { mode: 'indeterminate' }];
       } else if (getters.isExporting) {
         return [getters.exportProgress, { mode: 'normal' }];
-      } else if (getters.isUploading) {
-        return [rootState.youtube.progress.percent, { mode: 'error' }];
       } else if (status.error !== '') {
         return [1, { mode: 'paused' }];
       } else {
@@ -146,7 +144,6 @@ export default {
       return localStorage.getItem('previousPath' + key) ?? defaultPath;
     },
     usePath({}, { key = '', usedPath }) {
-      // localStorage['previousPath' + key] = path.dirname(usedPath);
       localStorage['previousPath' + key] = usedPath;
     },
     // 视频导出提示
@@ -171,12 +168,12 @@ export default {
       if (!getters.hasProject) return;
       let { canceled, filePath } = await dispatch('promptVideoExport');
       if (!canceled) {
-        commit('isYtUpload', false);
         commit('exportOutputPath', filePath);
         dispatch('exportVideo');
       }
       return canceled;
     },
+    
     async promptVideoInput({ dispatch, commit }) {
       let { canceled, filePaths } = await remote.dialog.showOpenDialog(remote.getCurrentWindow(), {
         title: 'Import video',
@@ -259,7 +256,7 @@ export default {
         currentWindow.focus();
         commit('showPrompt', {
           title: '你确定要关闭吗?',
-          subtitle: '您可能有未保存的更改',
+          subtitle: '你可能有未保存的更改',
           confirmText: '关闭',
           onConfirm: () => dispatch('closeWindow'),
         });

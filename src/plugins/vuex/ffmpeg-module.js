@@ -165,16 +165,6 @@ export default {
       }, 800);
     },
     // 重置状态
-    resetYouTubeStatus({ commit }) {
-      commit('ytDone', false);
-      commit('ytUrl', '');
-      commit('ytProgress', {
-        uploaded: 0,
-        total: -1,
-        percent: 0,
-      });
-    },
-    // 重置状态
     resetExportStatus({ commit }) {
       commit('statusDone', false);
       commit('statusProgress', 0);

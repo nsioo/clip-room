@@ -70,24 +70,12 @@
       <v-btn
         class="no-drag"
         icon
-        v-if="status.done && !(isExporting || isUploading) && status.error === ''"
+        v-if="status.done && !isExporting && status.error === ''"
         @click="$store.commit('showExportStatus', true)"
       >
         <v-icon color="success">mdi-check</v-icon>
       </v-btn>
-      <v-btn
-        icon
-        v-if="isExporting || isUploading"
-        @click="$store.commit('showExportStatus', true)"
-      >
-        <v-progress-circular
-          class="no-drag"
-          :color="isUploading ? 'red' : 'default'"
-          :value="(isUploading ? youtube.progress.percent : exportProgress) * 100"
-        >
-          {{ Math.round((isUploading ? youtube.progress.percent : exportProgress) * 100) }}
-        </v-progress-circular>
-      </v-btn>
+
       <!-- 导出按钮 -->
       <v-menu open-on-hover close-delay="100" offset-y v-else-if="hasProject">
         <template v-slot:activator="{ on, attrs }">
@@ -108,11 +96,11 @@
             </v-list-item-icon>
             <v-list-item-title>导出</v-list-item-title>
           </v-list-item>
-          <v-list-item @click="showExportDialog(true)">
+          <v-list-item @click="uploadToCos">
             <v-list-item-icon>
-              <v-icon>mdi-youtube</v-icon>
+              <v-icon>mdi-cloud-upload</v-icon>
             </v-list-item-icon>
-            <v-list-item-title>上传到</v-list-item-title>
+            <v-list-item-title>上传云</v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -199,13 +187,10 @@ export default {
   data: () => ({}),
   mounted() {},
   methods: {
-    showExportDialog(youtube = false) {
-      if (youtube && !this.isLoggedIn) {
-        this.addSnack({ text: '上传前必须登录YouTube' });
-        this.$router.push('/settings');
-        return;
-      }
-      this.$store.commit('ytShow', youtube);
+    uploadToCos() {
+
+    },
+    showExportDialog() {
       this.$store.commit('showExportDialog', true);
     },
     goHome() {
@@ -213,7 +198,6 @@ export default {
     },
     ...mapActions([
       'promptVideoInput',
-      'exportToYouTube',
       'exportVideoAs',
       'secureClose',
       'promptProjectInput',
@@ -234,11 +218,8 @@ export default {
       'projectFileName',
       'isExporting',
       'exportProgress',
-      'isUploading',
-      'isLoggedIn',
     ]),
     ...mapState({
-      youtube: (state) => state.youtube,
       activeFragment: (state) => state.activeFragment,
       importVideoLoading: (state) => state.loading.videoImport,
       importProjectLoading: (state) => state.loading.projectImport,

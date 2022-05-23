@@ -10,66 +10,6 @@
     </div>
     <v-divider class="mt-2 mb-2"></v-divider>
 
-    <!-- <div class="secrets">
-      <h2>Youtube</h2>
-      <p class="caption">
-        在使用与YouTube相关的功能之前，必须设置这些值。Order: YouTube Id, Youtube Secret
-      </p>
-      <div class="secret-textarea">
-        <div class="secret-help">
-          <p>Client ID</p>
-          <p>Client Secret</p>
-        </div>
-        <v-textarea
-          :placeholder="secretsPlaceholder"
-          no-resize
-          spellcheck="false"
-          :rules="secretRules"
-          outlined
-          hide-details="auto"
-          auto-grow
-          row-height="4"
-          v-model="secrets"
-        ></v-textarea>
-      </div>
-      <p class="key-saved" v-if="$store.getters.isKeySet">
-        <v-icon color="success">mdi-check</v-icon>
-        <span>Keys saved!</span>
-      </p>
-      <p v-else class="key-saved">
-        <v-icon color="error">mdi-close</v-icon>
-        <span>One or more keys not valid</span>
-      </p>
-    </div>
-
-    <div>
-      <h2>Account</h2>
-      <div class="login" v-if="$store.getters.isKeySet">
-        <div v-if="!$store.getters.isLoggedIn">
-          <p>单击下面的按钮登录YouTube™ 账户!</p>
-          <v-btn outlined color="red" @click="login" :loading="loginLoading">
-            <v-icon class="mr-2">mdi-youtube</v-icon>
-            登陆
-          </v-btn>
-          <v-btn icon color="primary" @click="resetLogin" v-if="loginLoading">
-            <v-icon>mdi-close</v-icon>
-          </v-btn>
-        </div>
-      </div>
-      <div v-if="$store.getters.isLoggedIn" class="account-info">
-        <div v-if="$store.state.auth.userInfo !== null">
-          <v-avatar>
-            <v-img :src="$store.state.auth.userInfo.thumbnails.high.url"></v-img>
-          </v-avatar>
-          <span class="ml-2">{{ $store.state.auth.userInfo.title }}</span>
-        </div>
-        <div v-else>已登录 YouTube！</div>
-        <v-btn class="ml-4" text @click="logout">注销</v-btn>
-      </div>
-      <div v-else><h4>未登陆</h4></div>
-    </div>
-    <v-divider class="mt-2 mb-2"></v-divider> -->
-
     <h2 class="mt-3">主题颜色</h2>
     <div class="colors mt-2">
       <v-btn class="mr-2" color="primary" @click="editingPrimary = true">编辑默认配色</v-btn>
