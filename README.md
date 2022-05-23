@@ -20,6 +20,17 @@
 ## 功能一览
 
 <details> 
+    <summary>🔰 工程管理</summary>
+    <pre>
+  ✔️ 新建工程
+  ✔️ 导入工程
+  ✔️ 保存工程
+  ✔️ 导出视频
+  ✔️ 导入视频
+    </pre>
+</details>
+
+<details> 
     <summary>🍻 视频剪辑</summary>
     <pre>
   ✔️ 裁剪起始位 / 结束位
@@ -54,9 +65,16 @@
 </details>
 
 <details> 
-    <summary>🌏 上传云</summary>
+    <summary>🔗 上传云</summary>
     <pre>
-  ❌ 生成预览链接
+  ❌ 生成预览链接 (COS)
+    </pre>
+</details>
+
+<details> 
+    <summary>💖 其他功能</summary>
+    <pre>
+  ✔️ 主题更换
     </pre>
 </details>
 
@@ -72,4 +90,4 @@ Windows 平台: [最新版](https://github.com/yesmore/clip-room/releases/latest
 
 ## Licence
 
-CV MKr is open source software licensed as [GPL](LICENSE).
+Clip Room is open source software licensed as [GPL](LICENSE).
