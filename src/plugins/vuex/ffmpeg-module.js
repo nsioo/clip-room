@@ -227,11 +227,11 @@ export default {
       return new Promise((resolve, reject) => {
         let min = Infinity,
           max = -Infinity;
-        loudness.dbMin = -45;
-        loudness.dbMax = 0;
-        loudness.absLoudness = 0.8;
+        loudness.dbMin = -45; // 最小音量（分贝）
+        loudness.dbMax = 0; // 最大音量（分贝）
+        loudness.absLoudness = 0.8; // 绝对音量（分贝）
         loudness.data = [];
-        let filter = [
+        let filter = [ // 音量计算过滤器
           {
             filter: 'ebur128',
             inputs: '[0:a]',
@@ -239,6 +239,7 @@ export default {
             outputs: 'out',
           },
         ];
+
         ffmpeg()
           .input(Utils.fixPath(filePath))
           .complexFilter(filter, 'out')
@@ -280,10 +281,12 @@ export default {
           .saveToFile('-');
       });
     },
+
     async getFilters({ state, dispatch, commit }) {
       if (state.cache.filters === null) commit('filtersCache', await dispatch('_getFilters'));
       return state.cache.filters;
     },
+
     async _getFilters({}) {
       return new Promise((resolve, reject) => {
         ffmpeg.getAvailableFilters((err, filters) => {
@@ -372,24 +375,29 @@ export default {
         let promises = [];
         for (let i = 0; i < ssCount; i++) {
           let timeStamp = (duration / ssCount) * i; // 截图时间戳
-          promises.push(ffmpeg.screenshot(file, Directories.temp, timeStamp)); // 截图
+          // 截图任务入栈
+          promises.push(ffmpeg.screenshot(file, Directories.temp, timeStamp)); 
         }
+        // 执行截图任务
         let screenshots = { all: [], merged: '' };
         Promise.all(promises).then(async (ss) => {
           screenshots.all.push(...ss);
           screenshots.merged = await dispatch('mergeScreenshots', ss);
         });
 
+        // 获取音频
         let loudness = {};
         let videoFile = new VideoFile(result, screenshots, loudness);
         dispatch('getLoudness', {
           filePath: file,
           loudness,
         }).then();
+        // 存入缓存
         commit('videoFileCache', { path: file, file: videoFile });
       }
       return state.videoFileCache[file];
     },
+    
     async getPaths({ state }) {
       const downloadDirectory = Directories.files;
       return new Promise(async (resolve) => {

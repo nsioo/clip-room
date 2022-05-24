@@ -11,11 +11,13 @@ export default class Command {
     this.store = store;
   }
 
+  // 执行
   execute() {
-    throw new Error('Not implemented');
+    throw new Error('Execute not implemented');
   }
 
+  // 撤回
   undo() {
-    throw new Error('Not implemented');
+    throw new Error('Undo not implemented');
   }
 }

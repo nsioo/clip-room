@@ -27,94 +27,93 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    // 状态 - 导出  
     exportStatus: {
-      youtube: false,
-      done: false,
-      show: false,
-      progress: 0,
-      output: [],
-      error: '',
-      command: null,
+      done: false, // 是否导出完成
+      show: false, // 是否显示导出状态
+      progress: 0, // 导出进度
+      output: [], // 导出输出
+      error: '', // 导出错误
+      command: null, // 导出命令
     },
-    export: {
-      filters: [],
-      showDialog: false,
-      fps: '',
-      interpolate: false,
-      bitrate: '',
-      customResolution: false,
-      width: 2560,
-      height: 1440,
-      outputPath: '',
+    export: { // 导出视频信息
+      filters: [], // 导出过滤器
+      showDialog: false, // 是否显示导出对话框
+      fps: '', // 导出帧率
+      interpolate: false, // 是否导出插值
+      bitrate: '', // 导出码率
+      customResolution: false, // 是否自定义分辨率
+      width: 2560, // 分辨率宽
+      height: 1440, // 分辨率高
+      outputPath: '', // 导出输出路径
     },
-    windowWidth: window.innerWidth,
-    projectFilePath: '',
-    snackbars: [],
-    timeline: [],
-    videosContainer: null,
-    videoFiles: [],
-    showContextMenu: false,
-    activeFragment: null,
+    windowWidth: window.innerWidth, // 窗口宽度
+    projectFilePath: '', // 项目文件路径
+    snackbars: [], // 蛇形框
+    timeline: [], // 时间轴
+    videosContainer: null, // 视频容器
+    videoFiles: [], // 视频文件列表
+    showContextMenu: false, // 显示上下菜单
+    activeFragment: null, // 当前选择片段
     loading: {
       videoImport: false, // 视频导入加载
       projectImport: false, // 项目导入加载
     },
-    configTimeline: {
-      minFragmentWidth: 90,
-      widthPerSecond: +(localStorage.getItem('widthPerSecond') ?? 3.5),
+    configTimeline: { // 时间轴配置
+      minFragmentWidth: 90, // 最小片段宽度
+      widthPerSecond: +(localStorage.getItem('widthPerSecond') ?? 3.5), // 每秒宽度
     },
-    player: {
-      widthPercent: +(localStorage.getItem('playerWidth') ?? 0.5),
-      progress: 0,
-      volume: +(localStorage.getItem('playerVolume') ?? 1),
-      playing: false,
-      fullscreen: false,
+    player: { // 底部播放器控件
+      widthPercent: +(localStorage.getItem('playerWidth') ?? 0.5), // 宽度百分比
+      progress: 0, // 进度
+      volume: +(localStorage.getItem('playerVolume') ?? 1), // 音量
+      playing: false, // 播放状态
+      fullscreen: false, // 全屏
     },
   },
   mutations: {
     removeExportFilter: (state, filter) =>
-      state.export.filters.splice(state.export.filters.indexOf(filter), 1),
-    addExportFilter: (state, filter) => state.export.filters.push(filter),
-    exportFilters: (state, filters) => (state.export.filters = filters),
-    exportOutputPath: (state, outputPath) => (state.export.outputPath = outputPath),
-    customHeight: (state, height) => (state.export.height = height),
-    customWidth: (state, width) => (state.export.width = width),
-    showExportDialog: (state, value) => (state.export.showDialog = value),
+      state.export.filters.splice(state.export.filters.indexOf(filter), 1), // 删除导出筛选器
+    addExportFilter: (state, filter) => state.export.filters.push(filter), // 添加导出筛选器 
+    exportFilters: (state, filters) => (state.export.filters = filters), // 导出筛选器
+    exportOutputPath: (state, outputPath) => (state.export.outputPath = outputPath), // 输出路径
+    customHeight: (state, height) => (state.export.height = height), // 自定义分辨率高
+    customWidth: (state, width) => (state.export.width = width), // 自定义分辨率宽
+    showExportDialog: (state, value) => (state.export.showDialog = value), // 显示导出对话框
 
-    statusCommand: (state, command) => (state.exportStatus.command = command),
-    statusDone: (state, value) => (state.exportStatus.done = value),
-    statusProgress: (state, value) => (state.exportStatus.progress = value),
-    addStatusOutput: (state, value) => state.exportStatus.output.push(value),
-    statusOutput: (state, value) => (state.exportStatus.output = value),
-    statusError: (state, value) => (state.exportStatus.error = value),
-    showExportStatus: (state, value) => (state.exportStatus.show = value),
+    // 状态命令
+    statusCommand: (state, command) => (state.exportStatus.command = command), // 导出状态命令
+    statusDone: (state, value) => (state.exportStatus.done = value), // 导出状态完成
+    statusProgress: (state, value) => (state.exportStatus.progress = value), // 导出状态进度
+    addStatusOutput: (state, value) => state.exportStatus.output.push(value), // 导出状态输出
+    statusOutput: (state, value) => (state.exportStatus.output = value),   // 导出状态输出
+    statusError: (state, value) => (state.exportStatus.error = value), // 导出状态错误
+    showExportStatus: (state, value) => (state.exportStatus.show = value), // 显示导出状态
 
-    timeline: (state, fragments) => (state.timeline = fragments),
-    projectFilePath: (state, p) => {
+    timeline: (state, fragments) => (state.timeline = fragments), // 时间轴
+    projectFilePath: (state, p) => { // 项目文件路径
       state.projectFilePath = p;
     },
-    fullscreen: (state, value) => (state.player.fullscreen = value),
-    showContextMenu: (state, value) => (state.showContextMenu = value),
-    windowWidth: (state, value) => (state.windowWidth = value),
-    importVideoLoading: (state, value) => (state.loading.videoImport = value),
-    importProjectLoading: (state, value) => (state.loading.projectImport = value),
-    videosContainer: (state, container) => {
+    fullscreen: (state, value) => (state.player.fullscreen = value), // 全屏
+    showContextMenu: (state, value) => (state.showContextMenu = value), // 显示上下菜单
+    windowWidth: (state, value) => (state.windowWidth = value), // 窗口宽度
+    importVideoLoading: (state, value) => (state.loading.videoImport = value), // 视频导入加载
+    importProjectLoading: (state, value) => (state.loading.projectImport = value), // 项目导入加载
+    videosContainer: (state, container) => { // 视频容器
       state.videosContainer = container;
       state.videoFiles.forEach((v) => {
         v.container = container;
         v._elCache = null;
       });
     },
-    addSnackObject: (state, snack) => state.snackbars.push(snack),
-    removeSnack: (state, snack) => state.snackbars.splice(state.snackbars.indexOf(snack), 1),
-    moveFragment: (state, { fragment, newIndex }) => {
+    addSnackObject: (state, snack) => state.snackbars.push(snack), // 添加蛇形框
+    removeSnack: (state, snack) => state.snackbars.splice(state.snackbars.indexOf(snack), 1), // 删除蛇形框
+    moveFragment: (state, { fragment, newIndex }) => { // 移动片段
       let index = state.timeline.indexOf(fragment);
       if (index === -1) return;
       state.timeline.splice(index, 1);
       state.timeline.splice(newIndex, 0, fragment);
     },
-    removeFromTimeline: (state, removedFragment) => {
+    removeFromTimeline: (state, removedFragment) => { // 从时间轴中移除片段
       let index = state.timeline.indexOf(removedFragment);
       if (index === -1) return;
       state.timeline.splice(index, 1);
@@ -138,7 +137,7 @@ export default new Vuex.Store({
         }
       }
     },
-    addToTimeline: (state, { fragment, index }) => {
+    addToTimeline: (state, { fragment, index }) => { // 在时间轴中添加片段
       if (!state.videoFiles.includes(fragment.video)) {
         fragment.video.container = state.videosContainer;
         state.videoFiles.push(fragment.video);
@@ -147,33 +146,32 @@ export default new Vuex.Store({
       else state.timeline.splice(index, 0, fragment);
       if (state.activeFragment === null) state.activeFragment = fragment;
     },
-    activeFragment: (state, fragment) => {
+    activeFragment: (state, fragment) => { // 当前选中片段
       state.activeFragment = fragment;
     },
-    videoFiles: (state, videoFiles) => (state.videoFiles = videoFiles),
-    progress: (state, progress) => (state.player.progress = progress),
-    playing: (state, playing) => (state.player.playing = playing),
-    playerWidth: (state, percent) =>
-      (state.player.widthPercent = localStorage.playerWidth = Utils.clamp(percent, 0.1, 0.9)),
+    videoFiles: (state, videoFiles) => (state.videoFiles = videoFiles), // 视频文件
+    progress: (state, progress) => (state.player.progress = progress), // 进度
+    playing: (state, playing) => (state.player.playing = playing), // 播放中
+    playerWidth: (state, percent) => 
+      (state.player.widthPercent = localStorage.playerWidth = Utils.clamp(percent, 0.1, 0.9)), // 播放器宽度
     playerVolume: (state, volume) =>
-      (state.player.volume = localStorage.playerVolume = Utils.clamp(volume)),
+      (state.player.volume = localStorage.playerVolume = Utils.clamp(volume)),  // 播放器音量
     widthPerSecond: (state, pixels) =>
-      (state.configTimeline.widthPerSecond = localStorage.widthPerSecond = pixels),
+      (state.configTimeline.widthPerSecond = localStorage.widthPerSecond = pixels), // 每秒宽度
   },
   getters: {
-    isAudio: (state) =>
-      ['mp3', 'wav', 'ogg'].includes(state.activeFragment.video.probe.format.format_name),
-    // isUploading: (state) => state.youtube.upload && !state.youtube.done,
-    isExporting: (state) => state.exportStatus.command !== null,
-    exportProgress: (state, getters) => {
+    isAudio: (state) => 
+      ['mp3', 'wav', 'ogg'].includes(state.activeFragment.video.probe.format.format_name), // 是否音频
+    isExporting: (state) => state.exportStatus.command !== null, // 是否正在导出
+    exportProgress: (state, getters) => { // 获取导出进度
       let time = state.exportStatus.progress.timemark;
       if (typeof time !== 'string') return 0;
       let [h, m, s] = time.split(':').map((n) => +n);
       let seconds = s + m * 60 + h * 3600;
       return Utils.clamp(seconds / getters.fullDuration);
     },
-    projectFileName: (state) => path.basename(state.projectFilePath),
-    scale: (state) => {
+    projectFileName: (state) => path.basename(state.projectFilePath), // 项目文件名
+    scale: (state) => { // 缩放
       switch (true) {
         case state.windowWidth > 1100:
           return 4;
@@ -187,15 +185,15 @@ export default new Vuex.Store({
           return 0;
       }
     },
-    themeColors() {
+    themeColors() { // 主题颜色
       return Vuetify.framework.theme.themes[Vuetify.framework.theme.isDark ? 'dark' : 'light'];
     },
-    timelineVideos: (state) => {
+    timelineVideos: (state) => { // 时间轴视频
       let videos = new Set();
       for (let { video } of state.timeline) videos.add(video);
       return [...videos];
     },
-    progressAtFragmentProgress:
+    progressAtFragmentProgress: 
       (state, getters) =>
       ({ fragment, progress }) => {
         let timeBefore = state.timeline
@@ -203,8 +201,8 @@ export default new Vuex.Store({
           .reduce((a, b) => a + b.adjustedDuration, 0);
         let fragmentPart = fragment.adjustedDuration / getters.fullDuration;
         return Utils.clamp(timeBefore / getters.fullDuration + fragmentPart * progress);
-      },
-    fragmentAtProgress: (state, getters) => (progress) => {
+      }, // 获取片段进度
+    fragmentAtProgress: (state, getters) => (progress) => { // 获取片段
       let fullDuration = getters.fullDuration;
       let beforeParts = 0;
       for (let fragment of state.timeline) {
@@ -222,27 +220,35 @@ export default new Vuex.Store({
       }
       return null;
     },
+    // 总播放时长 
     fullDuration: (state) => {
       let d = state.timeline.reduce((a, b) => a + b.adjustedDuration, 0);
       return isNaN(d) ? 0 : d;
     },
+    // 时间格式化
     toHms: () => (seconds) => {
       if (isNaN(seconds)) return `00:00.00`;
       let hms = new Date(seconds * 1000).toISOString().substr(11, 11);
       if (hms.startsWith('00')) return hms.substr(3);
       return hms;
     },
+    // 播放进度
     computedProgress: (state, getters) => getters.fragmentAtProgress(state.player.progress),
+    // 可左移片段
     canMoveLeft: (state) => state.timeline.indexOf(state.activeFragment) > 0,
+    // 可右移片段
     canMoveRight: (state) =>
       state.timeline.indexOf(state.activeFragment) < state.timeline.length - 1,
+    // 可向左拉时间轴
     canSkipFrameLeft: (state) => state.player.progress > 0,
+    // 可向右拉时间轴
     canSkipFrameRight: (state) => state.player.progress < 1,
-
+    // 可剪切片段于某点
     canCutAt: (state, getters) => (progress) => {
       let v = getters.fragmentAtProgress(progress)?.fragmentProgress;
       return v > 0 && v < 1;
     },
+    // 可剪切片段
     canCut: (state, getters) =>
       getters.computedProgress?.fragmentProgress > 0 &&
       getters.computedProgress?.fragmentProgress < 1,
@@ -250,7 +256,7 @@ export default new Vuex.Store({
   actions: {
     async initialize({ dispatch }) {
       await dispatch('initializeFfmpeg');
-      await dispatch('initializeAuth');
+      // await dispatch('initializeAuth');
     },
     undo({ commit, dispatch }) {
       commit('hasUnsavedAction', true);
@@ -324,13 +330,14 @@ export default new Vuex.Store({
     async importVideo({ dispatch }, path) {
       try {
         let videoFile = await dispatch('loadMetadata', path); // 1.1.1 获取视频信息
-        let fragment = new VideoFragment(videoFile);
-        dispatch('executeCommand', new AddFragment(fragment));
+        let fragment = new VideoFragment(videoFile); // 1.1.2 创建视频片段
+        dispatch('executeCommand', new AddFragment(fragment)); // 1.1.3 添加视频片段
       } catch (e) {
         console.log(e);
         dispatch('addSnack', { text: '导入视频失败, 请重试' });
       }
     },
+    // 
     async seek({ state, commit, getters }, progress) {
       let { fragment, videoProgress } = getters.fragmentAtProgress(progress);
       state.timeline.filter((f) => f !== fragment).forEach((f) => f.reset());
@@ -338,6 +345,7 @@ export default new Vuex.Store({
       commit('activeFragment', fragment);
       if (state.player.playing && fragment.video.element.paused) fragment.video.element.play();
     },
+
     async playNextFragment({ state, commit, dispatch }, play = false) {
       let currentIndex = state.timeline.indexOf(state.activeFragment);
       if (currentIndex >= state.timeline.length - 1) {

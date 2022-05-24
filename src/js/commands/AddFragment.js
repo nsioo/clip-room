@@ -6,9 +6,10 @@ import Command from '@/js/commands/Command';
 export default class AddFragment extends Command {
   constructor(fragment) {
     super('Add fragment');
-    this.fragment = fragment;
+    this.fragment = fragment; // 要添加的片段
   }
 
+  // 在命令执行前，把要添加的片段添加到时间轴
   execute() {
     if (Command.store.state.activeFragment === null) {
       Command.store.commit('activeFragment', this.fragment);

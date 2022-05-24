@@ -74,7 +74,8 @@
 <details> 
     <summary>💖 其他功能</summary>
     <pre>
-  ✔️ 主题更换
+  ✔️ 主题更换 (多级配色)
+  ✔️ 夜间模式
     </pre>
 </details>
 
