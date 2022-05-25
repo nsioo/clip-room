@@ -9,19 +9,19 @@ export default {
     hasUnsavedAction: false,
   },
   mutations: {
-    hasUnsavedAction: (state, value) => (state.hasUnsavedAction = value),
-    stackIndex: (state, index) => (state.stackIndex = index),
-    undoStack: (state, commands) => (state.undoStack = commands),
-    resetCommands: (state) => {
+    hasUnsavedAction: (state, value) => (state.hasUnsavedAction = value), // 是否有未保存的操作
+    stackIndex: (state, index) => (state.stackIndex = index), // 操作栈索引
+    undoStack: (state, commands) => (state.undoStack = commands), // 撤消堆栈
+    resetCommands: (state) => { // 重置命令
       state.stackIndex = -1;
       state.undoStack.splice(0, state.undoStack.length);
     },
-    addCommand: (state, command) => {
+    addCommand: (state, command) => { // 添加撤销命令
       // Erase stack after stackIndex
       state.undoStack.splice(++state.stackIndex);
       state.undoStack.push(command);
     },
-    undoCommand: (state) => {
+    undoCommand: (state) => { // 撤销命令
       while (state.stackIndex > -1) {
         let toUndo = state.undoStack[state.stackIndex--];
         toUndo.undo();
@@ -34,7 +34,7 @@ export default {
           break;
       }
     },
-    redoCommand: (state) => {
+    redoCommand: (state) => { // 重做命令
       // When redoing a command, we pick the one to the right of the stackIndex
       while (state.stackIndex < state.undoStack.length - 1) {
         let toRedo = state.undoStack[++state.stackIndex];
@@ -50,9 +50,9 @@ export default {
     },
   },
   getters: {
-    canUndo: (state) => state.stackIndex > -1,
-    canRedo: (state) => state.stackIndex < state.undoStack.length - 1,
-    hasProject: (state, getters, rootState) => rootState.activeFragment !== null,
+    canUndo: (state) => state.stackIndex > -1, // 是否可以撤销
+    canRedo: (state) => state.stackIndex < state.undoStack.length - 1, // 是否可以重做
+    hasProject: (state, getters, rootState) => rootState.activeFragment !== null, // 是否有片段
     project: (state) => {
       let commands = JSON.parse(JSON.stringify(state.undoStack));
       commands.forEach((c) => delete c.batchOn);
@@ -77,6 +77,7 @@ export default {
     },
   },
   actions: {
+    // 放弃更改提示
     async discardChangesPrompt({ dispatch, state }) {
       if (state.hasUnsavedAction) {
         return await dispatch('showPrompt', {
@@ -85,9 +86,11 @@ export default {
       }
       return true;
     },
+    // 新项目
     async newProject({ commit, state, dispatch }, overwriteFilePath = true) {
       if (await dispatch('discardChangesPrompt')) dispatch('clearProject', overwriteFilePath);
     },
+    // 清空项目
     clearProject({ commit, state }, overwriteFilePath = true) {
       commit('activeFragment', null);
       commit('resetCommands');
@@ -98,6 +101,7 @@ export default {
       if (overwriteFilePath) commit('projectFilePath', '');
       commit('videosContainer', null);
     },
+    // 导入项目
     async importProject({ dispatch, commit, state }, projectString) {
       commit('importProjectLoading', true);
       await dispatch('clearProject', false);
@@ -126,12 +130,14 @@ export default {
       commit('importProjectLoading', false);
       commit('hasUnsavedAction', false);
     },
+    // 执行命令
     executeCommand({ commit, dispatch }, command) {
       commit('hasUnsavedAction', true);
       commit('addCommand', command);
       command.execute();
       dispatch('printUndoStack');
     },
+    // 打印撤消堆栈
     printUndoStack({ state }) {
       let result = '';
       for (let i = 0; i < state.undoStack.length; i++) {

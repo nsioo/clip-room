@@ -3,8 +3,9 @@ import path from 'path';
 
 const ffmpeg = window.require('fluent-ffmpeg');
 
-ffmpeg.ffprobe = util.promisify(ffmpeg.ffprobe);
+ffmpeg.ffprobe = util.promisify(ffmpeg.ffprobe); // 异步调用
 
+// 截屏
 ffmpeg.screenshot = (file, folder, timeStamp) => {
   return new Promise((resolve, reject) => {
     let fileName = Math.round(Math.random() * 100000000) + '.png';

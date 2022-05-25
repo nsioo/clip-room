@@ -35,6 +35,7 @@ export default {
     },
   },
   mutations: {
+    // 隐藏文本提示框
     hideTextPrompt: (state) => (state.textPrompt.show = false),
     showTextPrompt: (
       state,
@@ -60,6 +61,7 @@ export default {
       state.textPrompt.onCancel = onCancel;
     },
     hidePrompt: (state) => (state.prompt.show = false),
+    // 关闭窗口时显示提示框（未保存工程）
     showPrompt: (
       state,
       {
@@ -81,8 +83,9 @@ export default {
     },
   },
   getters: {
+    // 获取应用程序的版本号
     appVersion: () => {
-      return remote.app.getVersion(); // 获取应用程序的版本号
+      return remote.app.getVersion(); 
     },
     // 进程状态
     systemProgress: (state, getters, rootState) => {
@@ -102,6 +105,7 @@ export default {
     updateSystemProgress({ getters }) {
       currentWindow.setProgressBar(...getters.systemProgress);
     },
+    // 显示文本提示框
     async showTextPrompt(
       { commit, state },
       {
@@ -126,6 +130,7 @@ export default {
         });
       });
     },
+    // 关闭显示提示框
     async showPrompt(
       { commit },
       {

@@ -254,26 +254,32 @@ export default new Vuex.Store({
       getters.computedProgress?.fragmentProgress < 1,
   },
   actions: {
+    // 初始化 ffmpeg
     async initialize({ dispatch }) {
       await dispatch('initializeFfmpeg');
       // await dispatch('initializeAuth');
     },
+    // 回退
     undo({ commit, dispatch }) {
       commit('hasUnsavedAction', true);
       commit('undoCommand');
       dispatch('printUndoStack');
     },
+    // 前进
     redo({ commit, dispatch }) {
       commit('hasUnsavedAction', true);
       commit('redoCommand');
       dispatch('printUndoStack');
     },
+    // 设置音量
     setVolume({ state, dispatch }, { fragment = state.activeFragment, volume }) {
       dispatch('executeCommand', new SetVolume(fragment, volume));
     },
+    // 设置播放速率
     setPlaybackRate({ state, dispatch }, { fragment = state.activeFragment, playbackRate }) {
       dispatch('executeCommand', new SetPlaybackRate(fragment, playbackRate));
     },
+    // 设置片段开始点
     setStartPoint(
       { state, getters, dispatch },
       {
@@ -284,6 +290,7 @@ export default new Vuex.Store({
       if (!getters.canCutAt(start)) return;
       dispatch('executeCommand', new SetStartPoint(fragment, start));
     },
+    // 设置片段结束点
     setEndPoint(
       { state, getters, dispatch },
       {
@@ -294,6 +301,7 @@ export default new Vuex.Store({
       if (!getters.canCutAt(end)) return;
       dispatch('executeCommand', new SetEndPoint(fragment, end));
     },
+    // 分割片段
     split(
       { state, getters, dispatch },
       {
@@ -304,9 +312,11 @@ export default new Vuex.Store({
       if (!getters.canCutAt(split)) return;
       dispatch('executeCommand', new SplitFragment(fragment, split));
     },
+    // 拷贝片段
     duplicate({ state, getters, dispatch }, { fragment = state.activeFragment }) {
       dispatch('executeCommand', new DuplicateFragment(fragment));
     },
+    // 跳帧
     async skipFrames({ state, getters, commit }, n) {
       if (n > 0 && !getters.canSkipFrameRight) return;
       if (n < 0 && !getters.canSkipFrameLeft) return;
@@ -318,11 +328,13 @@ export default new Vuex.Store({
       fragment.video.element.pause();
       fragment.video.element.currentTime = videoProgress * fragment.video.element.duration;
     },
+    // 移动片段
     shiftFragment({ state, dispatch }, { fragment = state.activeFragment, shift = 1 }) {
       let newIndex = state.timeline.indexOf(fragment) + shift;
       if (newIndex < 0 || newIndex >= state.timeline.length) return;
       dispatch('executeCommand', new MoveFragment(fragment, newIndex));
     },
+    // 删除片段
     removeFragment({ state, dispatch }, fragment = state.activeFragment) {
       dispatch('executeCommand', new DeleteFragment(fragment));
     },
@@ -337,15 +349,16 @@ export default new Vuex.Store({
         dispatch('addSnack', { text: '导入视频失败, 请重试' });
       }
     },
-    // 
+    // 寻找时间轴正在播放的片段
     async seek({ state, commit, getters }, progress) {
       let { fragment, videoProgress } = getters.fragmentAtProgress(progress);
       state.timeline.filter((f) => f !== fragment).forEach((f) => f.reset());
       fragment.video.element.currentTime = videoProgress * fragment.video.duration;
       commit('activeFragment', fragment);
+      // 播放
       if (state.player.playing && fragment.video.element.paused) fragment.video.element.play();
     },
-
+    // 播放下一片段
     async playNextFragment({ state, commit, dispatch }, play = false) {
       let currentIndex = state.timeline.indexOf(state.activeFragment);
       if (currentIndex >= state.timeline.length - 1) {
@@ -361,6 +374,7 @@ export default new Vuex.Store({
       }
       commit('activeFragment', nextFragment);
     },
+    // 播放视频
     async play({ state, commit }) {
       if (state.player.progress === 1) {
         commit('activeFragment', state.timeline[0]);
@@ -368,9 +382,11 @@ export default new Vuex.Store({
       }
       await state.activeFragment.video.element.play();
     },
+    // 暂停
     pause({ state }) {
       state.activeFragment.video.element.pause();
     },
+    // 添加
     addSnack: async ({ state, commit }, { text, timeout = 3000 }) => {
       let snack = { text, open: true, timeout };
       commit('addSnackObject', snack);

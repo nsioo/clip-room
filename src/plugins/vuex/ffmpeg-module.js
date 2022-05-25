@@ -29,7 +29,8 @@ export default {
     earliestStart: (state, getters, rootState) => (video) =>
       video.duration *
       Math.max(...rootState.timeline.filter((f) => f.video === video).map((f) => f.start)),
-    complexFilter: (state, getters, rootState) => {
+      // 合并
+      complexFilter: (state, getters, rootState) => {
       let fragments = rootState.timeline;
       const parseFilter = (subFilters) => subFilters.map((sf) => `${sf[0]}=${sf[1]}`).join(',');
       let filter = [];
@@ -172,7 +173,7 @@ export default {
       commit('statusOutput', []);
       commit('statusError', '');
     },
-    // 导出视频核心函数
+    // 核心函数 - 导出视频
     async exportVideo({ dispatch, rootState, getters, commit }) {
       if (getters.isExporting) {
         dispatch('addSnack', {
@@ -286,7 +287,7 @@ export default {
       if (state.cache.filters === null) commit('filtersCache', await dispatch('_getFilters'));
       return state.cache.filters;
     },
-
+    // 格式化过滤器
     async _getFilters({}) {
       return new Promise((resolve, reject) => {
         ffmpeg.getAvailableFilters((err, filters) => {
@@ -302,6 +303,7 @@ export default {
       if (state.cache.formats === null) commit('formatsCache', await dispatch('_getFormats'));
       return state.cache.formats;
     },
+    // 格式化缓存
     async _getFormats({}) {
       return new Promise((resolve, reject) => {
         ffmpeg.getAvailableFormats((err, result) => {
@@ -402,7 +404,7 @@ export default {
       }
       return state.videoFileCache[file];
     },
-
+    // 获取视频文件路径
     async getPaths({ state }) {
       const downloadDirectory = Directories.files;
       return new Promise(async (resolve) => {
@@ -431,6 +433,7 @@ export default {
         );
       });
     },
+    // 等待文件解锁
     async waitForFileUnlock({ dispatch }, { filePath, timeout = 10000 }) {
       let startTime = performance.now();
       while (true) {
@@ -441,6 +444,7 @@ export default {
         await Utils.waitSleep(150);
       }
     },
+    // 检查文件是否被锁定
     async isFileLocked({ dispatch }, filePath) {
       return new Promise((resolve, reject) => {
         fs.open(filePath, 'r+', (err, fd) => {

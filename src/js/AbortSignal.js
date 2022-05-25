@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
 
+// 中止信号
 export default class AbortSignal extends EventEmitter {
   constructor(signal) {
     super();

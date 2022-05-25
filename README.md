@@ -20,7 +20,7 @@
 ## 功能一览
 
 <details> 
-    <summary>🔰 工程管理</summary>
+    <summary>🔰 工程管理 (5)</summary>
     <pre>
   ✔️ 新建工程
   ✔️ 导入工程
@@ -31,26 +31,34 @@
 </details>
 
 <details> 
-    <summary>🍻 视频剪辑</summary>
+    <summary>🍻 视频剪辑 (10)</summary>
     <pre>
-  ✔️ 设置起始位 / 结束位
-  ✔️ 分割视频
-  ✔️ 拼接视频
+  ✔️ 设置片段起始位
+  ✔️ 设置片段结束位
+  ✔️ 分割视频片段
+  ✔️ 拼接视频片段
+  ✔️ 拷贝视频片段
+  ✔️ 移动视频片段
+  ✔️ 删除视频片段
+  ✔️ 历史操作记录
+  ✔️ 撤销操作
+  ✔️ 重做操作
     </pre>
 </details>
 
 <details> 
-    <summary>😎 视频参数</summary>
+    <summary>😎 视频参数 (5)</summary>
     <pre>
   ✔️ 播放速率条件
   ✔️ 视频音量调节
   ✔️ Change fps with support for motion interpolation
-  ✔️ 更改分辨率 / 比特率
+  ✔️ 更改分辨率 
+  ✔️ 更改比特率
     </pre>
 </details>
 
 <details> 
-    <summary>🎉 高级过滤器</summary>
+    <summary>🎉 高级过滤器 (99+)</summary>
     <pre>
   ✔️ 改变对比度
   ✔️ 调节亮度
@@ -76,6 +84,8 @@
     <pre>
   ✔️ 主题更换 (多级配色)
   ✔️ 夜间模式
+  ✔️ <a href="/docs/Shortcut.md">内置快捷键</a>
+  ✔️ 全屏模式
     </pre>
 </details>
 

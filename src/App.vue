@@ -240,6 +240,7 @@ export default {
     setWindowWidth() {
       this.$store.commit('windowWidth', window.innerWidth);
     },
+    // TODO：Shortcut docs
     keyListener(e) {
       let ignoredElements = ['[object HTMLTextAreaElement]', '[object HTMLInputElement]'];
       if (ignoredElements.includes(e.target.toString())) {
