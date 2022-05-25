@@ -334,6 +334,7 @@ export default {
         state.downloadEvent.once('ffmpegReady', resolve);
       });
     },
+    // 获取截图
     getImageFromUrl({}, url) {
       return new Promise((resolve, reject) => {
         let image = new Image();
@@ -342,6 +343,7 @@ export default {
         image.onerror = reject;
       });
     },
+    // 合并截图
     async mergeScreenshots({ dispatch }, paths) {
       if (paths.length === 0) return null;
       let canvas = document.createElement('canvas');
@@ -356,17 +358,19 @@ export default {
       }
 
       return new Promise((resolve) => {
+        // HTMLCanvasElement.toBlob() 方法创造 Blob 对象，用以展示 canvas 上的图片；
+        // 这个图片文件可以被缓存或保存到本地（由用户代理自行决定）
         canvas.toBlob((b) => resolve(URL.createObjectURL(b)), 'image/jpg');
       });
     },
-    // Func 1.1.1：获取视频信息
+    // Func 1.2：获取视频信息
     async loadMetadata({ state, commit, dispatch }, file) {
       if (!state.videoFileCache.hasOwnProperty(file)) {
         console.log(`Loading metadata for ${file}`);
 
         // Wait for getPaths to be done
         await dispatch('waitForFfmpeg'); // 等待ffmpeg准备好
-        // Fix C:\Users\24216\AppData\Roaming\cliproom-files
+        // Fixed：C:\Users\24216\AppData\Roaming\cliproom-files\ 目录下缺少 ffmpeg.exe/ffprobe.exe/ffplay.exe
         let result = await ffmpeg.ffprobe(file); 
         let duration = result.format.duration; // 视频时长
 
@@ -382,11 +386,12 @@ export default {
         let screenshots = { all: [], merged: '' };
         Promise.all(promises).then(async (ss) => {
           screenshots.all.push(...ss);
-          screenshots.merged = await dispatch('mergeScreenshots', ss);
+          screenshots.merged = await dispatch('mergeScreenshots', ss); // 合并截图
         });
 
         // 获取音频
         let loudness = {};
+        // 实例化视频文件对象
         let videoFile = new VideoFile(result, screenshots, loudness);
         dispatch('getLoudness', {
           filePath: file,
@@ -397,7 +402,7 @@ export default {
       }
       return state.videoFileCache[file];
     },
-    
+
     async getPaths({ state }) {
       const downloadDirectory = Directories.files;
       return new Promise(async (resolve) => {

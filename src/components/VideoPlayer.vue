@@ -1,6 +1,7 @@
 <template>
   <perfect-scrollbar class="player" ref="player">
     <div ref="videosContainer" class="videos" :style="{ height: maxVideoHeight + 'px' }">
+      <!-- 视频位置 -->
       <video
         @canplay.once="canPlay"
         ref="videos"
@@ -20,18 +21,22 @@
     </div>
     <!-- 控制容器 -->
     <div class="controls" :class="{ fullscreen }">
+      <!-- 时间进度条 -->
       <div
         class="time-control"
         v-if="videoFiles.length > 0"
         :style="{ pointerEvents: activeFragment.video.canPlay ? 'all' : 'none' }"
       >
         <seek-bar class="seek-bar"></seek-bar>
+        <!-- 时长显示 -->
         <span class="seek-time"
           >{{ toHms(progress * fullDuration) }} / {{ toHms(fullDuration) }}</span
         >
       </div>
 
+      <!-- 控件 -->
       <div class="playback-controls" v-if="videoFiles.length > 0">
+        <!-- 音量按钮 -->
         <v-menu open-on-hover :close-on-content-click="false" v-if="!fullscreen">
           <template v-slot:activator="{ on, attrs }">
             <v-icon v-bind="attrs" v-on="on" small>
@@ -53,6 +58,7 @@
           </v-list>
         </v-menu>
         <v-spacer></v-spacer>
+        <!-- 快退/暂停/快进 -->
         <div class="center-controls">
           <v-btn
             icon
@@ -74,6 +80,7 @@
           </v-btn>
         </div>
         <v-spacer></v-spacer>
+        <!-- 全屏 -->
         <div class="right-controls">
           <v-btn icon @click="toggleFullScreen">
             <v-icon>mdi-fullscreen</v-icon>

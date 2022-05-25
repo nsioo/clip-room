@@ -329,9 +329,9 @@ export default new Vuex.Store({
     // Func 1.1：导入视频主逻辑
     async importVideo({ dispatch }, path) {
       try {
-        let videoFile = await dispatch('loadMetadata', path); // 1.1.1 获取视频信息
-        let fragment = new VideoFragment(videoFile); // 1.1.2 创建视频片段
-        dispatch('executeCommand', new AddFragment(fragment)); // 1.1.3 添加视频片段
+        let videoFile = await dispatch('loadMetadata', path); // 1.2 获取视频信息
+        let fragment = new VideoFragment(videoFile); // 1.3 创建视频片段
+        dispatch('executeCommand', new AddFragment(fragment)); // 1.4 添加视频片段
       } catch (e) {
         console.log(e);
         dispatch('addSnack', { text: '导入视频失败, 请重试' });
